@@ -67,5 +67,18 @@ components: [row]
 });
 
 }
+  client.on("interactionCreate", async interaction => {
+
+if (!interaction.isButton()) return;
+
+if (interaction.customId === "buy") {
+await interaction.reply("🛒 Để mua dịch vụ hãy gõ: `!order tên dịch vụ`");
+}
+
+if (interaction.customId === "pay") {
+await interaction.reply("💳 **Thanh toán VCB**\nNgân hàng: Vietcombank\nSTK: 1044626277\nTên: Bui Thanh Son");
+}
+
+});
 
 client.login(process.env.TOKEN);
