@@ -18,7 +18,7 @@ client.on('messageCreate', message => {
   if (message.content === '!menu') {
     message.channel.send({
       content: "📜 **Bảng Giá Dexsty Shop**",
-      files: ["./menu.jpg"]
+      files: ["./menu.jpeg"]
     });
   }
 });
