@@ -13,7 +13,13 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', message => {
+  if (message.content.startsWith("!order")) {
+  const order = message.content.replace("!order ", "");
   
+  message.channel.send(
+    `📦 **ĐƠN HÀNG MỚI**\n👤 Khách: ${message.author}\n🛒 Dịch vụ: **${order}**\n\nAdmin sẽ liên hệ bạn sớm!`
+  );
+  }
   if (message.author.bot) return;
   if (message.content === "!pay") {
   message.channel.send({
