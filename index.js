@@ -1,101 +1,100 @@
-const { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent
-  ]
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
 
-const prefix = "!";
-
-// ID ADMIN
-const adminID = "1105058130246770758";
+const ADMIN_ID = "1105058130246770758";
 
 client.once("ready", () => {
-  console.log("Dexsty Bot đã online!");
+  console.log(`Bot đã online: ${client.user.tag}`);
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
 
-if (message.author.bot) return;
+  // MENU
+  if (message.content === "!menu") {
 
-if (!message.content.startsWith(prefix)) return;
+    const file = new AttachmentBuilder("./Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg");
 
-const args = message.content.slice(prefix.length).trim().split(/ +/);
-const command = args.shift().toLowerCase();
+    const embed = new EmbedBuilder()
+      .setTitle("🌟 DEXSTY BLOX FRUIT SHOP")
+      .setDescription("Chọn nút bên dưới để sử dụng dịch vụ.")
+      .setImage("attachment://Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg")
+      .setColor("Blue");
 
+    const row = new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId("order")
+          .setLabel("🛒 Đặt Dịch Vụ")
+          .setStyle(ButtonStyle.Primary),
 
-// MENU
-if (command === "!menu") {
+        new ButtonBuilder()
+          .setCustomId("pay")
+          .setLabel("💳 Thanh Toán")
+          .setStyle(ButtonStyle.Success),
 
-const row = new ActionRowBuilder()
-.addComponents(
-new ButtonBuilder()
-.setCustomId("order")
-.setLabel("🛒 Tạo đơn")
-.setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId("help")
+          .setLabel("📖 Hướng Dẫn")
+          .setStyle(ButtonStyle.Secondary)
+      );
 
-new ButtonBuilder()
-.setCustomId("pay")
-.setLabel("💳 Thanh toán")
-.setStyle(ButtonStyle.Success)
-);
+    message.channel.send({
+      embeds: [embed],
+      components: [row],
+      files: [file]
+    });
+  }
 
-message.channel.send({
-content: "📌 **MENU DỊCH VỤ DEXSTY**\nBấm nút bên dưới để sử dụng bot",
-files: [" Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg"],
-components: [row]
-});
+  // ORDER
+  if (message.content.startsWith("!order")) {
 
-}
+    const order = message.content.replace("!order", "").trim();
 
+    if (!order) {
+      return message.reply("❌ Hãy nhập: `!order tên dịch vụ`");
+    }
 
-// ORDER
-if (command === "!order") {
+    message.reply("✅ Đã gửi đơn cho admin.");
 
-message.channel.send(`
-📦 **ĐƠN HÀNG MỚI**
+    message.channel.send(
+`📢 <@${ADMIN_ID}> có đơn mới!
 
 👤 Khách: ${message.author}
+🛒 Dịch vụ: ${order}`
+    );
+  }
+});
 
-📝 Admin sẽ liên hệ cho bạn sớm nhất có thể.
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isButton()) return;
 
-<@${adminID}>
-`);
+  if (interaction.customId === "order") {
+    interaction.reply("📩 Nhập: `!order tên dịch vụ` để đặt.");
+  }
 
-}
+  if (interaction.customId === "pay") {
+    interaction.reply(
+`💳 Thanh toán
 
+🏦 Ngân hàng: VCB
+👤 Tên: Bui Thanh Son
+🔢 STK: 1044627277`
+    );
+  }
 
-// PAY
-if (command === "!pay") {
+  if (interaction.customId === "help") {
+    interaction.reply(
+`📖 Hướng dẫn
 
-message.channel.send(`
-💳 **THANH TOÁN**
-
-Ngân hàng: VCB  
-STK: 1044627277  
-Tên: Bui Thanh Son
-`);
-
-}
-
-
-// HELP
-if (command === "!huongdan") {
-
-message.channel.send(`
-📖 **HƯỚNG DẪN SỬ DỤNG BOT**
-
-!menu → mở menu bot  
-!order → tạo đơn hàng  
-!pay → xem thông tin thanh toán  
-!help → hướng dẫn sử dụng
-`);
-
-}
-
+!menu → mở menu
+!order → đặt dịch vụ
+!pay → thanh toán`
+    );
+  }
 });
 
 client.login(process.env.TOKEN);
