@@ -37,7 +37,7 @@ client.on("messageCreate", async (message) => {
           .setStyle(ButtonStyle.Success),
 
         new ButtonBuilder()
-          .setCustomId("help")
+          .setCustomId("huongdan")
           .setLabel("📖 Hướng Dẫn")
           .setStyle(ButtonStyle.Secondary)
       );
