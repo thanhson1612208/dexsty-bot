@@ -28,7 +28,7 @@ const command = args.shift().toLowerCase();
 
 
 // MENU
-if (command === "menu") {
+if (command === "!menu") {
 
 const row = new ActionRowBuilder()
 .addComponents(
@@ -53,7 +53,7 @@ components: [row]
 
 
 // ORDER
-if (command === "order") {
+if (command === "!order") {
 
 message.channel.send(`
 📦 **ĐƠN HÀNG MỚI**
@@ -69,7 +69,7 @@ message.channel.send(`
 
 
 // PAY
-if (command === "pay") {
+if (command === "!pay") {
 
 message.channel.send(`
 💳 **THANH TOÁN**
@@ -83,7 +83,7 @@ Tên: Bui Thanh Son
 
 
 // HELP
-if (command === "help") {
+if (command === "!huongdan") {
 
 message.channel.send(`
 📖 **HƯỚNG DẪN SỬ DỤNG BOT**
