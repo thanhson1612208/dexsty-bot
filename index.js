@@ -17,7 +17,7 @@ client.on('messageCreate', message => {
   if (message.author.bot) return;
   if (message.content === "!pay") {
   message.channel.send({
-    content: "💳 **THÔNG TIN THANH TOÁN**\n\n🏦 Ngân hàng: MB Bank\n👤 Chủ TK: BUI THANH SON\n🔢 STK: 1944627277\n\n📌 Nội dung CK: Discord + dịch vụ mua\n\nSau khi chuyển khoản hãy gửi bill cho admin để xác nhận."
+    content: "💳 **THÔNG TIN THANH TOÁN**\n\n🏦 Ngân hàng: Vietcombank\n👤 Chủ TK: BUI THANH SON\n🔢 STK: 1944627277\n\n📌 Nội dung CK: Discord + dịch vụ mua\n\nSau khi chuyển khoản hãy gửi bill cho admin để xác nhận."
   });
 }
   if (message.content === '!menu') {
