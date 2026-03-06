@@ -11,63 +11,7 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("!buy")) {
-
-let args = message.content.split(" ");
-let price = parseInt(args[1]);
-
-if (!price) {
-return message.reply("Ví dụ: !buy 50000");
-}
-
-const qr = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${price}&addInfo=DEXSTY`;
-
-message.channel.send({
-content: `💸 Thanh toán **${price} VND**`,
-files: [qr]
-});
-
-}
-
-});
-  if (message.author.bot) return;
-
-  // MENU
-  if (message.content === "!menu") {
-
-    const file = new AttachmentBuilder("./Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg");
-
-    const embed = new EmbedBuilder()
-      .setTitle("🌟 DEXSTY BLOX FRUIT SHOP")
-      .setDescription("Chọn nút bên dưới để sử dụng dịch vụ.")
-      .setImage("attachment://Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg")
-      .setColor("Blue");
-
-    const row = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId("order")
-          .setLabel("🛒 Đặt Dịch Vụ")
-          .setStyle(ButtonStyle.Primary),
-
-        new ButtonBuilder()
-          .setCustomId("pay")
-          .setLabel("💳 Thanh Toán")
-          .setStyle(ButtonStyle.Success),
-
-        new ButtonBuilder()
-          .setCustomId("huongdan")
-          .setLabel("📖 Hướng Dẫn")
-          .setStyle(ButtonStyle.Secondary)
-      );
-
-    message.channel.send({
-      embeds: [embed],
-      components: [row],
-      files: [file]
-    });
-  }
-
+  
   // ORDER
   if (message.content.startsWith("!order")) {
 
