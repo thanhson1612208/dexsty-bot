@@ -11,6 +11,23 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("!buy")) {
+
+let args = message.content.split(" ");
+let price = parseInt(args[1]);
+
+const qr = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${price}&addInfo=DEXSTY`;
+
+const embed = new EmbedBuilder()
+.setTitle("💸 Thanh toán đơn hàng")
+.setDescription(`Số tiền cần thanh toán: **${price} VND**`)
+.setImage(qr);
+
+message.channel.send({embeds:[embed]});
+
+}
+
+});
   if (message.author.bot) return;
 
   // MENU
