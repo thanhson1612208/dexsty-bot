@@ -16,14 +16,16 @@ client.on("messageCreate", async (message) => {
 let args = message.content.split(" ");
 let price = parseInt(args[1]);
 
+if (!price) {
+return message.reply("Ví dụ: !buy 50000");
+}
+
 const qr = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${price}&addInfo=DEXSTY`;
 
-const embed = new EmbedBuilder()
-.setTitle("💸 Thanh toán đơn hàng")
-.setDescription(`Số tiền cần thanh toán: **${price} VND**`)
-.setImage(qr);
-
-message.channel.send({embeds:[embed]});
+message.channel.send({
+content: `💸 Thanh toán **${price} VND**`,
+files: [qr]
+});
 
 }
 
