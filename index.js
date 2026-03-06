@@ -17,7 +17,7 @@ client.on('messageCreate', message => {
   const order = message.content.replace("!order ", "");
 
   message.channel.send(
-    `📦 ĐƠN HÀNG MỚI\n👤 Khách: ${message.author}\n🛒 Dịch vụ: ${order}\n\n<@cncubel> có khách mới!`
+    `📦 **ĐƠN HÀNG MỚI**\n👤 Khách: ${message.author}\n🛒 Dịch vụ: ${order}\n\n<@1105058130246770758> có khách cần hỗ trợ!`
   );
   }
   if (message.author.bot) return;
