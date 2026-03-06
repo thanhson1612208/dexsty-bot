@@ -62,7 +62,7 @@ new ButtonBuilder()
 
 message.channel.send({
 content: "📜 **MENU DỊCH VỤ BLOX FRUIT - DEXSTY**",
-files: ["menu.jpg"],
+files: ["Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg "],
 components: [row]
 });
 
