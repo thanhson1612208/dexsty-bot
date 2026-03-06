@@ -11,6 +11,26 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+
+  
+if (message.content.startsWith("!done")) {
+
+if (!message.member.permissions.has("Administrator")) {
+return message.reply("❌ Chỉ admin mới dùng được lệnh này");
+}
+
+let user = message.mentions.users.first();
+
+if (!user){
+return message.reply("Vui lòng tag khách hàng. Ví dụ: !done @user");
+}
+
+message.channel.send(`✅ Đơn của ${user} đã **hoàn thành**!
+Cảm ơn bạn đã sử dụng dịch vụ tại **DEXSTY BLOX FRUITS SHOP** 💖`);
+
+}
+
+});
   
   // ORDER
   if (message.content.startsWith("!order")) {
