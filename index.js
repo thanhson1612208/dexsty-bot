@@ -13,6 +13,23 @@ client.once('ready', () => {
 });
 
 client.on('messageCreate', message => {
+  if (message.content === "!huongdan") {
+  message.channel.send(
+`📖 **HƯỚNG DẪN SỬ DỤNG BOT DEXSTY**
+
+🛒 **Mua dịch vụ**
+• !menu → Xem bảng giá dịch vụ Blox Fruit
+• !order <dịch vụ> → Tạo đơn mua
+
+💳 **Thanh toán**
+• !pay → Xem thông tin chuyển khoản VCB
+
+🎁 **Khác**
+• !huongdan → Xem hướng dẫn dùng bot
+
+📩 Khi tạo đơn bot sẽ tự ping admin để xử lý.`
+  );
+  }
   if (message.content.startsWith("!order")) {
   const order = message.content.replace("!order ", "");
 
