@@ -11,23 +11,44 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.author.bot) return;
 
-if (message.author.bot) return;
+  // MENU
+  if (message.content === "!menu") {
 
-if (message.content.startsWith("!done")) {
+    const file = new AttachmentBuilder("./Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg");
 
-let user = message.mentions.users.first();
+    const embed = new EmbedBuilder()
+      .setTitle("🌟 DEXSTY BLOX FRUIT SHOP")
+      .setDescription("Chọn nút bên dưới để sử dụng dịch vụ.")
+      .setImage("attachment://Messenger_creation_214E610D-DB3C-4EA3-9455-2650B4663371.jpeg")
+      .setColor("Blue");
 
-if (!user) {
-return message.reply("❌ Vui lòng tag khách hàng");
-}
+    const row = new ActionRowBuilder()
+      .addComponents(
+        new ButtonBuilder()
+          .setCustomId("order")
+          .setLabel("🛒 Đặt Dịch Vụ")
+          .setStyle(ButtonStyle.Primary),
 
-message.channel.send(`✅ Đơn của ${user} đã hoàn thành!
-Cảm ơn bạn đã sử dụng dịch vụ **DEXSTY BLOX FRUITS SHOP** 💖`);
+        new ButtonBuilder()
+          .setCustomId("pay")
+          .setLabel("💳 Thanh Toán")
+          .setStyle(ButtonStyle.Success),
 
-}
+        new ButtonBuilder()
+          .setCustomId("help")
+          .setLabel("📖 Hướng Dẫn")
+          .setStyle(ButtonStyle.Secondary)
+      );
 
-});
+    message.channel.send({
+      embeds: [embed],
+      components: [row],
+      files: [file]
+    });
+  }
+
   // ORDER
   if (message.content.startsWith("!order")) {
 
@@ -65,7 +86,7 @@ client.on("interactionCreate", async (interaction) => {
     );
   }
 
-  if (interaction.customId === "huongdan") {
+  if (interaction.customId === "help") {
     interaction.reply(
 `📖 Hướng dẫn
 
