@@ -86,7 +86,7 @@ client.on("interactionCreate", async (interaction) => {
     );
   }
 
-  if (interaction.customId === "help") {
+  if (interaction.customId === "huongdan") {
     interaction.reply(
 `📖 Hướng dẫn
 
