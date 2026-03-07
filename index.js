@@ -105,15 +105,23 @@ message.reply("✅ Đã gửi đơn cho admin.");
 const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
 if (!logChannel) return message.reply("❌ Không tìm thấy kênh log.");
 
-logChannel.send(`
-📦 **ĐƠN HÀNG MỚI**
+const { EmbedBuilder } = require("discord.js");
 
-📢 <@${ADMIN_ID}> có đơn mới!
+const embed = new EmbedBuilder()
+.setTitle("📦 ĐƠN HÀNG MỚI")
+.setColor("#00ffcc")
+.addFields(
+{ name: "👤 Khách hàng", value: `${message.author}`, inline: true },
+{ name: "🛒 Dịch vụ", value: `${order}`, inline: true },
+{ name: "🆔 User ID", value: `${message.author.id}`, inline: false }
+)
+.setFooter({ text: "Order System" })
+.setTimestamp();
 
-👤 Khách: ${message.author}
-🛒 Dịch vụ: ${order}
-🆔 ID: ${message.author.id}
-`);
+logChannel.send({
+content: `📢 <@${ADMIN_ID}> có đơn mới!`,
+embeds: [embed]
+});
 
 }
 });
