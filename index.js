@@ -5,7 +5,7 @@ const client = new Client({
 });
 
 const ADMIN_ID = "1105058130246770758";
-
+let orderCount = 0;
 client.once("ready", () => {
   console.log(`Bot đã online: ${client.user.tag}`);
 });
@@ -104,13 +104,16 @@ message.reply("✅ Đơn của bạn đã được gửi cho shop!");
 
 const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
 if (!logChannel) return;
+orderCount++;
+const orderId = `#${orderCount.toString().padStart(3,"0")}`;
 
 const embed = new EmbedBuilder()
 .setTitle("📦 ĐƠN HÀNG MỚI")
 .setColor("#00ffcc")
 .addFields(
+{ name: "🧾 Mã đơn", value: orderId, inline: true },
 { name: "👤 Khách hàng", value: `${message.author}`, inline: true },
-{ name: "🛒 Dịch vụ", value: order, inline: true }
+{ name: "🛒 Dịch vụ", value: order, inline: false }
 )
 .setTimestamp();
 
