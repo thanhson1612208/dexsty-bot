@@ -108,4 +108,4 @@ Cảm ơn bạn đã sử dụng dịch vụ tại
 
 });
 
-client.login("YOUR_BOT_TOKEN");
+client.login(" MTQ3OTQwNDU1MTAwMDgyMTc2MA.GMlCcQ.ytvPU3JmXfM6f6XYNQ45mf7KeYwf3zARccrH-k");
