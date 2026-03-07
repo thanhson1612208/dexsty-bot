@@ -20,7 +20,7 @@ if (!price) {
 return message.reply("⚠️ Ví dụ: !buy 50000");
 }
 
-const qr = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${price}&addInfo=DEXSTY`;
+const qr = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${price}&addInfo=mua%hang%tu%shop%Dexsty`;
 
 message.channel.send({
 content: `💸 Vui lòng chuyển khoản **${price} VND**
