@@ -11,6 +11,29 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("!buy")) {
+
+let args = message.content.split(" ");
+let price = parseInt(args[1]);
+
+if (!price) {
+return message.reply("⚠️ Ví dụ: !buy 50000");
+}
+
+const qr = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${price}&addInfo=Mua%20vat%20pham%20tu%20shop%20Dexsty`;
+
+message.channel.send({
+content: `💸 Vui lòng chuyển khoản **${price} VND**
+
+🏦 Ngân hàng: Vietcombank  
+💳 STK: 1044627277  
+👤 Chủ TK: Bui Thanh Son  
+
+Sau khi chuyển khoản hãy gửi bill để admin xác nhận.`,
+files: [qr]
+});
+
+  }
   if (message.content.startsWith("!done")) {
 
 if (!message.member.permissions.has("Administrator")) {
