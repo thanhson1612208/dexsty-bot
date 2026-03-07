@@ -11,6 +11,22 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.content === "!support") {
+
+const embed = new EmbedBuilder()
+.setTitle("🛠️ HỖ TRỢ KHÁCH HÀNG")
+.setDescription("Nếu bạn cần hỗ trợ hãy liên hệ admin")
+.setColor("#00ccff")
+.addFields(
+{ name: "👑 Admin", value: "<@1105058130246770758>", inline: true },
+{ name: "💬 Cách liên hệ", value: "Inbox trực tiếp admin hoặc tạo đơn bằng !order", inline: false }
+)
+.setFooter({ text: "DEXSTY BLOX FRUITS SHOP" })
+.setTimestamp();
+
+message.channel.send({ embeds: [embed] });
+
+  }
   if (message.content.startsWith("!buy")) {
 
 let args = message.content.split(" ");
