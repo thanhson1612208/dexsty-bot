@@ -101,6 +101,8 @@ message.reply("✅ Đã gửi đơn cho admin.");
 
 const logChannel = client.channels.cache.get("1479690248513519667");
 
+if (!logChannel) return message.reply("❌ Không tìm thấy kênh log.");
+
 logChannel.send(
 `📦 **ĐƠN HÀNG MỚI**
 
