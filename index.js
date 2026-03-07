@@ -116,7 +116,7 @@ logChannel.send(`
 `);
 
 }
-
+});
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
 
