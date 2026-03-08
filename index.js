@@ -53,7 +53,7 @@ client.on("messageCreate", async (message) => {
                     { label: '2x Mastery', value: 'mastery', description: '55K' },
                     { label: '2x Money', value: 'money', description: '69K' },
                     { label: '2x Boss Drop', value: 'bossdrop', description: '69K' },
-                    { label: t Boat', value: 'boat', description: '55K' },
+                    { label: 'Boat', value: 'boat', description: '55K' },
                     { label: '+1 Storage', value: 'storage', description: '62K' },
                     { label: '200 Robux (120H)', value: '200rb', description: '50K' },
                 ])
