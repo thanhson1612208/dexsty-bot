@@ -169,14 +169,14 @@ ephemeral: true
 }
 
 // sau khi qua kiểm tra mới chạy nút
-if (interaction.customId === "accept_order") {
+if (interaction.customId === "accept_order_") {
 
 // code nhận đơn của bạn
 await interaction.reply("✅ Bạn đã nhận đơn này.");
 
 }
 
-if (interaction.customId === "cancel_order") {
+if (interaction.customId === "cancel_order_") {
 
 // code hủy đơn của bạn
 await interaction.reply("❌ Bạn đã hủy đơn này.");
