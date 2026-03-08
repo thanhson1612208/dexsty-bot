@@ -11,6 +11,21 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+ if (message.content === "!dztest") {
+
+        const score = Math.floor(Math.random() * 101);
+
+        let msg = "😅 Cũng tạm thôi!";
+        if (score > 80) msg = "🔥 Đẹp trai vãi!";
+        else if (score > 60) msg = "😎 Khá đẹp trai!";
+        else if (score > 40) msg = "🙂 Bình thường!";
+        else if (score > 20) msg = "😂 Hơi xấu nha!";
+        else msg = "💀 Thôi khỏi nói...";
+
+        message.reply(`😎 Độ đẹp trai của bạn là: **${score}/100**\n${msg}`);
+
+    }
+ 
   if (message.content === "!admin") {
 
         const embed = {
