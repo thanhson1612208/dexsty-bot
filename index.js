@@ -205,4 +205,4 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-client.login('YOUR_BOT_TOKEN_HERE');
+client.login('process.env.TOKEN ');
