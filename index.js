@@ -29,7 +29,7 @@ ${message.author} có độ gay: **${score}/10**
 ${comment}`);
 }
 
-});
+
   if (message.content === "!support") {
 
 const embed = new EmbedBuilder()
