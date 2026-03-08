@@ -180,7 +180,7 @@ if (interaction.customId.startsWith("cancel_order_")) {
 await interaction.reply("❌ Bạn đã hủy đơn này.");
 
 }
-});
+
   if (!interaction.isButton()) return;
   // nhận đơn
 if (interaction.customId.startsWith("accept_order_")) {
