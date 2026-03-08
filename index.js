@@ -11,6 +11,28 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.content.startsWith("!ship")) {
+
+        const users = message.mentions.users;
+
+        if (users.size < 2) {
+            return message.reply("💔 Bạn phải tag 2 người để ship! Ví dụ: `!ship @A @B`");
+        }
+
+        const user1 = users.at(0);
+        const user2 = users.at(1);
+
+        const percent = Math.floor(Math.random() * 101);
+
+        let result = "💔 Không hợp lắm...";
+        if (percent > 80) result = "💖 Trời ơi hợp quá cưới luôn!";
+        else if (percent > 50) result = "💕 Cũng khá hợp đó!";
+        else if (percent > 20) result = "😅 Hơi khó nhưng vẫn có hi vọng!";
+        else result = "💀 Thôi bỏ đi...";
+
+        message.reply(`❤️ **${user1.username}** + **${user2.username}**\n💘 Độ hợp nhau: **${percent}%**\n${result}`);
+    }
+
   if (message.content === "!gaytest") {
 
 const score = Math.floor(Math.random() * 11);
