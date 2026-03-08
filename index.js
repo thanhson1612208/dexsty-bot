@@ -11,6 +11,25 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.content === "!gaytest") {
+
+const score = Math.floor(Math.random() * 11);
+
+let comment = "";
+
+if (score <= 2) comment = "🗿 Thẳng như thước.";
+else if (score <= 5) comment = "🤨 Có dấu hiệu đáng nghi.";
+else if (score <= 8) comment = "🌈 Khá là rainbow đó.";
+else comment = "🏳️‍🌈 Gay chúa luôn!";
+
+message.reply(`🌈 **Gay Test Result**
+
+${message.author} có độ gay: **${score}/10**
+
+${comment}`);
+}
+
+});
   if (message.content === "!support") {
 
 const embed = new EmbedBuilder()
