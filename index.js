@@ -5,8 +5,7 @@ const {
     ButtonBuilder, 
     ButtonStyle, 
     EmbedBuilder, 
-    StringSelectMenuBuilder,
-    AttachmentBuilder 
+    StringSelectMenuBuilder 
 } = require('discord.js');
 
 const client = new Client({
@@ -19,18 +18,16 @@ const client = new Client({
 
 // --- CẤU HÌNH ---
 const ADMIN_ID = "1105058130246770758";
-const LOG_CHANNEL_ID = "1479690248513519667"; // ID kênh nhận thông báo đơn hàng
+const LOG_CHANNEL_ID = "1479690248513519667"; 
 let orderCount = 0;
 
+// Cập nhật giá chính xác theo ảnh bảng giá
 const prices = {
-    // Game Pass & Robux
     "drop": "170K", "notifier": "370K", "mastery": "55K", "money": "69K", 
     "bossdrop": "69K", "boat": "55K", "storage": "62K", "200rb": "50K",
-    // Perm Fruit Nhóm 1
     "rocket": "8K", "spin": "12K", "chop": "15K", "spring": "26K", "bomb": "31K",
     "smoke": "35K", "spike": "52K", "flame": "76K", "ice": "108K", "sand": "121K",
     "dark": "134K", "light": "137K", "diamond": "156K", "rubber": "168K", "ghost": "178K",
-    // Perm Fruit Nhóm 2
     "magma": "200K", "love": "244K", "buddha": "239K", "portal": "252K", "rumble": "264K",
     "phoenix": "278K", "sound": "291K", "blizzard": "291K", "gravity": "307K", 
     "dough": "314K", "shadow": "320K", "venom": "326K", "control": "332K", 
@@ -42,11 +39,9 @@ client.once("ready", () => {
     console.log(`✅ Bot Dexsty Shop đã online: ${client.user.tag}`);
 });
 
-// --- PHẦN 1: XỬ LÝ LỆNH CHAT ---
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
-    // Lệnh !menu
     if (message.content === '!menu') {
         const row1 = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder()
@@ -124,7 +119,6 @@ client.on("messageCreate", async (message) => {
         return message.channel.send({ embeds: [embed], components: [row1, row2, row3] });
     }
 
-    // Lệnh !admin
     if (message.content === "!admin") {
         const embedAdmin = new EmbedBuilder()
             .setColor(0xff66cc)
@@ -144,51 +138,25 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-// --- PHẦN 2: XỬ LÝ TƯƠNG TÁC (MENU & BUTTON) ---
 client.on("interactionCreate", async (interaction) => {
-    
-    // 1. XỬ LÝ DROPDOWN MENU (Khi khách chọn món)
     if (interaction.isStringSelectMenu()) {
         const selectedValue = interaction.values[0];
         const priceStr = prices[selectedValue] || "Liên hệ Admin";
-        
-        // Chuyển "170K" -> 170000
         const amount = parseInt(priceStr.replace(/K/g, '')) * 1000 || 0;
-
-        // Nội dung CK: Thanh toan [TEN_MON] shop Dexsty
         const info = `Thanh toan ${selectedValue.toUpperCase()} shop Dexsty`;
         const description = encodeURIComponent(info);
         
-        // Link VietQR Vietcombank
         const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=${description}`;
 
-        const invoice = `## 🧾 HÓA ĐƠN DEXSTY SHOP
-👤 **Khách hàng:** ${interaction.user.username}
-📦 **Dịch vụ:** ${selectedValue.toUpperCase()}
-💰 **Giá tiền:** ${priceStr}
-──────────────────
-🏦 **Thông tin thanh toán (VIETCOMBANK):**
-- **Ngân hàng:** Vietcombank (VCB)
-- **STK:** 1044627277
-- **Chủ TK:** BUI THANH SON
-- **Nội dung CK:** \`${info}\`
-──────────────────
-*(Vui lòng quét mã QR để thanh toán nhanh hoặc chuyển khoản theo thông tin trên)*`;
+        const invoice = `## 🧾 HÓA ĐƠN DEXSTY SHOP\n👤 **Khách hàng:** ${interaction.user.username}\n📦 **Dịch vụ:** ${selectedValue.toUpperCase()}\n💰 **Giá tiền:** ${priceStr}\n──────────────────\n🏦 **Thông tin thanh toán (VIETCOMBANK):**\n- **Ngân hàng:** Vietcombank (VCB)\n- **STK:** 1044627277\n- **Chủ TK:** BUI THANH SON\n- **Nội dung CK:** \`${info}\`\n──────────────────\n*(Quét mã QR để thanh toán tự động)*`;
 
-        return await interaction.reply({ 
-            content: invoice, 
-            files: [qrUrl], 
-            ephemeral: true 
-        });
+        return await interaction.reply({ content: invoice, files: [qrUrl], ephemeral: true });
     }
 
-    // 2. XỬ LÝ NÚT BẤM (Dành cho Admin duyệt đơn)
     if (interaction.isButton()) {
         if (!interaction.customId.includes("order_")) return;
-
-        // Chỉ Admin mới được bấm nút Duyệt/Hủy đơn
         if (interaction.user.id !== ADMIN_ID) {
-            return interaction.reply({ content: "❌ Bạn không phải Admin của shop!", ephemeral: true });
+            return interaction.reply({ content: "❌ Bạn không phải Admin!", ephemeral: true });
         }
 
         const userId = interaction.customId.split("_").pop();
@@ -196,13 +164,14 @@ client.on("interactionCreate", async (interaction) => {
 
         if (interaction.customId.startsWith("accept_order_")) {
             await interaction.update({ content: `✅ Đơn đã được nhận bởi ${interaction.user}`, components: [] });
-            if (user) user.send(`📦 Đơn của bạn đã được shop nhận!\n👨‍💼 Admin phụ trách: ${interaction.user}\nCảm ơn bạn đã tin tưởng Dexsty Shop ❤️`).catch(() => {});
+            if (user) user.send(`📦 Đơn của bạn đã được shop nhận bởi ${interaction.user}!`).catch(() => {});
         } 
         else if (interaction.customId.startsWith("cancel_order_")) {
             await interaction.update({ content: `❌ Đơn đã bị hủy bởi ${interaction.user}`, components: [] });
-            if (user) user.send(`❌ Đơn của bạn đã bị hủy bởi shop.\nNếu có thắc mắc vui lòng liên hệ Admin.`).catch(() => {});
+            if (user) user.send(`❌ Đơn của bạn đã bị hủy bởi shop.`).catch(() => {});
         }
     }
 });
 
-client.login('process.env.TOKEN ');
+// SỬA LỖI TẠI ĐÂY: Xóa dấu ngoặc kép và khoảng trắng thừa
+client.login(process.env.TOKEN); 
