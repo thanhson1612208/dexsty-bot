@@ -28,7 +28,7 @@ client.on("messageCreate", async (message) => {
                 }
             ],
             image: {
-                url: "https://i.imgur.com/6QZ7Z9X.png"
+                url: " https://i.postimg.cc/j2hHsYHp/IMG-20260309-004009.jpg"
             },
             footer: {
                 text: "DEXSTY SHOP • Uy tín - Nhanh chóng - Giá rẻ 💎"
