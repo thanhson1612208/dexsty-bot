@@ -155,7 +155,32 @@ components: [row]
 }
 });
 client.on("interactionCreate", async (interaction) => {
-  
+  if (!interaction.isButton()) return;
+
+const ADMIN_ID = "1105058130246770758"; // ID của bạn
+
+// kiểm tra nếu không phải admin
+if (interaction.user.id !== ADMIN_ID) {
+return interaction.reply({
+content: "❌ Chỉ admin mới có thể nhấn nút này.",
+ephemeral: true
+});
+}
+
+// phần xử lý nút
+if (interaction.customId === "accept_order") {
+
+// code nhận đơn của bạn
+
+}
+
+if (interaction.customId === "cancel_order") {
+
+// code hủy đơn của bạn
+
+}
+
+});
   if (!interaction.isButton()) return;
   // nhận đơn
 if (interaction.customId.startsWith("accept_order_")) {
