@@ -23,7 +23,7 @@ let orderCount = 0;
 
 // Cập nhật giá chính xác theo ảnh bảng giá
 const prices = {
-    "drop": "170K", "notifier": "370K", "mastery": "55K", "money": "69K", 
+    "yoru": "170K", "notifier": "370K", "mastery": "55K", "money": "69K", 
     "bossdrop": "69K", "boat": "55K", "storage": "62K", "200rb": "50K",
     "rocket": "8K", "spin": "12K", "chop": "15K", "spring": "26K", "bomb": "31K",
     "smoke": "35K", "spike": "52K", "flame": "76K", "ice": "108K", "sand": "121K",
@@ -48,12 +48,12 @@ client.on("messageCreate", async (message) => {
                 .setCustomId('menu_gamepass')
                 .setPlaceholder('🎮 Chọn Game Pass / Robux')
                 .addOptions([
-                    { label: '2x Drop Chance', value: 'drop', description: '170K' },
+                    { label: 'Dark Blade', value: 'yoru', description: '170K' },
                     { label: 'Fruit Notifier', value: 'notifier', description: '370K' },
                     { label: '2x Mastery', value: 'mastery', description: '55K' },
                     { label: '2x Money', value: 'money', description: '69K' },
                     { label: '2x Boss Drop', value: 'bossdrop', description: '69K' },
-                    { label: 'Fast Boat', value: 'boat', description: '55K' },
+                    { label: t Boat', value: 'boat', description: '55K' },
                     { label: '+1 Storage', value: 'storage', description: '62K' },
                     { label: '200 Robux (120H)', value: '200rb', description: '50K' },
                 ])
@@ -70,7 +70,7 @@ client.on("messageCreate", async (message) => {
                     { label: 'Perm Spring', value: 'spring', description: '26K' },
                     { label: 'Perm Bomb', value: 'bomb', description: '31K' },
                     { label: 'Perm Smoke', value: 'smoke', description: '35K' },
-                    { label: 'Perm Spike', value: 'spike', description: '52K' },
+                    { la'Perm Spike', value: 'spike', description: '52K' },
                     { label: 'Perm Flame', value: 'flame', description: '76K' },
                     { label: 'Perm Ice', value: 'ice', description: '108K' },
                     { label: 'Perm Sand', value: 'sand', description: '121K' },
@@ -173,5 +173,5 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-// SỬA LỖI TẠI ĐÂY: Xóa dấu ngoặc kép và khoảng trắng thừa
+
 client.login(process.env.TOKEN); 
