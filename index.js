@@ -169,20 +169,17 @@ ephemeral: true
 }
 
 // sau khi qua kiểm tra mới chạy nút
-if (interaction.customId === "accept_order_") {
+if (interaction.customId.startsWith("accept_order_")) {
 
-// code nhận đơn của bạn
 await interaction.reply("✅ Bạn đã nhận đơn này.");
 
 }
 
-if (interaction.customId === "cancel_order_") {
+if (interaction.customId.startsWith("cancel_order_")) {
 
-// code hủy đơn của bạn
 await interaction.reply("❌ Bạn đã hủy đơn này.");
 
 }
-
 });
   if (!interaction.isButton()) return;
   // nhận đơn
