@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, AttachmentBuilder } = require('discord.js');
-
+const { ActionRowBuilder, StringSelectMenuBuilder } = require("discord.js");
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
 });
@@ -11,7 +11,85 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
- if (message.content === "!dztest") {
+  if (message.content === "!menu") {
+
+const embed = {
+title: "🛒 DEXSTY BLOX FRUITS SHOP",
+description: "📦 Chọn dịch vụ bạn muốn mua:",
+color: 0x00ffff,
+image: { url: "https://i.imgur.com/yourbanner.png" }
+};
+
+const gamepass = new StringSelectMenuBuilder()
+.setCustomId("gamepass")
+.setPlaceholder("🎮 Chọn Game Pass")
+.addOptions([
+{ label: "2x Drop Chance", value: "drop", description: "170K" },
+{ label: "Fruit Notifier", value: "notifier", description: "370K" },
+{ label: "2x Mastery", value: "mastery", description: "55K" },
+{ label: "2x Money", value: "money", description: "69K" },
+{ label: "2x Boss Drop", value: "bossdrop", description: "69K" },
+{ label: "Fast Boat", value: "boat", description: "55K" },
+{ label: "+1 Storage", value: "storage", description: "62K" }
+]);
+
+const perm1 = new StringSelectMenuBuilder()
+.setCustomId("perm1")
+.setPlaceholder("🍏 Perm Fruit (1)")
+.addOptions([
+{ label: "Perm Rocket", value: "rocket", description: "8K" },
+{ label: "Perm Spin", value: "spin", description: "12K" },
+{ label: "Perm Chop", value: "chop", description: "15K" },
+{ label: "Perm Spring", value: "spring", description: "26K" },
+{ label: "Perm Bomb", value: "bomb", description: "31K" },
+{ label: "Perm Smoke", value: "smoke", description: "35K" },
+{ label: "Perm Spike", value: "spike", description: "52K" },
+{ label: "Perm Flame", value: "flame", description: "75K" },
+{ label: "Perm Ice", value: "ice", description: "108K" },
+{ label: "Perm Sand", value: "sand", description: "121K" },
+{ label: "Perm Dark", value: "dark", description: "134K" },
+{ label: "Perm Light", value: "light", description: "137K" },
+{ label: "Perm Diamond", value: "diamond", description: "142K" }
+]);
+
+const perm2 = new StringSelectMenuBuilder()
+.setCustomId("perm2")
+.setPlaceholder("🍏 Perm Fruit (2)")
+.addOptions([
+{ label: "Perm Rubber", value: "rubber", description: "168K" },
+{ label: "Perm Barrier", value: "barrier", description: "178K" },
+{ label: "Perm Magma", value: "magma", description: "200K" },
+{ label: "Perm Love", value: "love", description: "244K" },
+{ label: "Perm Buddha", value: "buddha", description: "239K" },
+{ label: "Perm Portal", value: "portal", description: "252K" },
+{ label: "Perm Rumble", value: "rumble", description: "264K" },
+{ label: "Perm Phoenix", value: "phoenix", description: "278K" },
+{ label: "Perm Sound", value: "sound", description: "291K" },
+{ label: "Perm Blizzard", value: "blizzard", description: "291K" },
+{ label: "Perm Gravity", value: "gravity", description: "307K" },
+{ label: "Perm Dough", value: "dough", description: "314K" },
+{ label: "Perm Shadow", value: "shadow", description: "320K" }
+]);
+
+const robux = new StringSelectMenuBuilder()
+.setCustomId("robux")
+.setPlaceholder("💎 Robux")
+.addOptions([
+{ label: "200 Robux (120h)", value: "200rb", description: "50K" }
+]);
+
+message.channel.send({
+embeds: [embed],
+components: [
+new ActionRowBuilder().addComponents(gamepass),
+new ActionRowBuilder().addComponents(perm1),
+new ActionRowBuilder().addComponents(perm2),
+new ActionRowBuilder().addComponents(robux)
+]
+});
+
+  }
+  if (message.content === "!dztest") {
 
         const score = Math.floor(Math.random() * 101);
 
@@ -249,7 +327,69 @@ components: [row]
 }
 });
 client.on("interactionCreate", async (interaction) => {
+if (!interaction.isStringSelectMenu()) return;
 
+const item = interaction.values[0];
+
+const prices = {
+rocket:"8K",
+spin:"12K",
+chop:"15K",
+spring:"26K",
+bomb:"31K",
+smoke:"35K",
+spike:"52K",
+flame:"75K",
+ice:"108K",
+sand:"121K",
+dark:"134K",
+light:"137K",
+diamond:"142K",
+rubber:"168K",
+barrier:"178K",
+magma:"200K",
+love:"244K",
+buddha:"239K",
+portal:"252K",
+rumble:"264K",
+phoenix:"278K",
+sound:"291K",
+blizzard:"291K",
+gravity:"307K",
+dough:"314K",
+shadow:"320K",
+mastery:"55K",
+money:"69K",
+boat:"55K",
+notifier:"370K",
+storage:"62K",
+"200rb":"50K"
+};
+
+const price = prices[item] || "???";
+
+const invoice = `🧾 HÓA ĐƠN DEXSTY SHOP
+
+👤 Khách: ${interaction.user.username}
+📦 Dịch vụ: ${item}
+💰 Giá: ${price}
+
+💳 VCB: 1044627277
+👤 Chủ TK: Bui Thanh Son
+`;
+
+await interaction.user.send(invoice);
+
+const log = interaction.client.channels.cache.get("1479690248513519667");
+
+log.send(`📦 ĐƠN MỚI
+👤 ${interaction.user.tag}
+📦 ${item}
+💰 ${price}`);
+
+interaction.reply({ content:"✅ Đã gửi hóa đơn vào DM!", ephemeral:true });
+
+}
 if (!interaction.isButton()) return;
 
 const ADMIN_ID = "1105058130246770758";
