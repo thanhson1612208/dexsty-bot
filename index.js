@@ -11,6 +11,44 @@ client.once("ready", () => {
 });
 
 client.on("messageCreate", async (message) => {
+  if (message.content === "!admin") {
+
+        const embed = {
+            color: 0xff66cc,
+            title: "👑 ADMIN DEXSTY BLOX FRUITS SHOP",
+            description: "💬 Cần mua dịch vụ **Blox Fruits** hãy liên hệ admin:",
+            fields: [
+                {
+                    name: "💬 Zalo / SĐT",
+                    value: "📱 **0762706736**"
+                },
+                {
+                    name: "⚡ Thời gian phản hồi",
+                    value: "⏰ 1 - 5 phút"
+                }
+            ],
+            image: {
+                url: "https://i.imgur.com/6QZ7Z9X.png"
+            },
+            footer: {
+                text: "DEXSTY SHOP • Uy tín - Nhanh chóng - Giá rẻ 💎"
+            }
+        };
+
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setLabel("📘 Facebook Admin")
+                .setStyle(ButtonStyle.Link)
+                .setURL("https://www.facebook.com/share/18HtqxaCu4/")
+        );
+
+        message.reply({
+            embeds: [embed],
+            components: [row]
+        });
+
+    }
+
   if (message.content.startsWith("!ship")) {
 
         const users = message.mentions.users;
