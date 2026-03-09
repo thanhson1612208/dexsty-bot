@@ -134,3 +134,30 @@ client.on("interactionCreate", async (interaction) => {
 
                     const doneEmbed = new EmbedBuilder()
                         .setTitle("🏁 ĐƠN HÀNG HOÀN TẤT")
+                        .addFields(oldEmbed.fields)
+                        .setImage(proofUrl)
+                        .setColor("#00ff00")
+                        .setTimestamp();
+
+                    if (doneChan) {
+                        // Gửi ảnh dưới dạng file đính kèm ĐỂ CHẮC CHẮN ẢNH KHÔNG BỊ LỖI
+                        await doneChan.send({ embeds: [doneEmbed], files: [m.attachments.first().url] });
+                    }
+                    
+                    await interaction.message.edit({ 
+                        embeds: [EmbedBuilder.from(oldEmbed).setTitle("🏁 ĐƠN ĐÃ XONG (CHECK LOG)")], 
+                        components: [] 
+                    });
+
+                    if (targetUser) targetUser.send("🏁 Đơn hàng đã hoàn tất! Cảm ơn bạn.");
+                    m.delete().catch(() => {});
+                });
+            } else if (parts[0] === 'deny') {
+                await interaction.update({ content: "❌ Đã từ chối đơn hàng.", embeds: [], components: [] });
+                if (targetUser) targetUser.send("❌ Đơn bị từ chối.");
+            }
+        }
+    }
+});
+
+client.login(process.env.TOKEN);
