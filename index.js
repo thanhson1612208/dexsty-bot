@@ -123,7 +123,7 @@ client.on("messageCreate", async (message) => {
         const embedAdmin = new EmbedBuilder()
             .setColor(0xff66cc)
             .setTitle("👑 ADMIN DEXSTY BLOX FRUITS SHOP")
-            .setDescription("💬 Cần mua dịch vụ Blox Fruits hãy liên hệ admin:")
+            .setDescription("💬 Có vấn đề hay thắc mắc thì inbox cho admin :")
             .addFields(
                 { name: "💬 Zalo / SĐT", value: "📱 **0762706736**" },
                 { name: "⚡ Thời gian phản hồi", value: "⏰ 1 - 5 phút" }
@@ -173,6 +173,5 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-// SỬA LỖI TẠI ĐÂY: Xóa dấu ngoặc kép và khoảng trắng thừa
 client.login(process.env.TOKEN); 
  
