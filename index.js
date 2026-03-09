@@ -81,26 +81,71 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.isStringSelectMenu()) {
         const val = interaction.values[0];
         const price = prices[val] || "N/A";
+        const amount = parseInt(price) * 1000;
         const info = `Thanh toan ${val.toUpperCase()} shop Dexsty`;
-        const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${parseInt(price)*1000}&addInfo=${encodeURIComponent(info)}`;
+        const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=${encodeURIComponent(info)}`;
+
         const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId(`paid_${val}_${price}`).setLabel('✅ Đã chuyển khoản').setStyle(ButtonStyle.Success)
+            new ButtonBuilder().setCustomId(`paid_${val}_${price}`).setLabel('✅ Chuyển Khoản').setStyle(ButtonStyle.Success),
+            new ButtonBuilder().setCustomId(`card_${val}_${price}`).setLabel('💳 Thẻ Garena/Viettel (Phí 15%)').setStyle(ButtonStyle.Primary)
         );
-        return await interaction.reply({ content: `📦 **Món:** ${val.toUpperCase()}\n💰 **Giá:** ${price}`, files: [qrUrl], components: [row], ephemeral: true });
+
+        return await interaction.reply({ 
+            content: `## 🛒 THÔNG TIN ĐƠN HÀNG\n📦 **Món:** ${val.toUpperCase()}\n💰 **Giá CK:** ${price}\n⚠️ **Lưu ý:** Nếu thanh toán bằng **Thẻ Cào (Garena/Viettel)**, bạn sẽ chịu phí chiết khấu **15%** (Ví dụ: Thẻ 100k Admin nhận được 85k).`, 
+            files: [qrUrl], 
+            components: [row], 
+            ephemeral: true 
+        });
     }
 
     if (interaction.isButton()) {
         const parts = interaction.customId.split('_');
         
+        // XỬ LÝ THANH TOÁN THẺ CÀO (GARENA & VIETTEL)
+        if (parts[0] === 'card') {
+            await interaction.update({ 
+                content: `💳 **THANH TOÁN THẺ CÀO (PHÍ 15%)**\n- Loại thẻ hỗ trợ: **Garena, Viettel**\n- Admin chỉ nhận được **85%** giá trị thẻ bạn gửi.\n\n👉 Bạn hãy nhập thông tin theo mẫu: \`Loại thẻ - Mệnh giá - Mã thẻ - Seri\` vào đây!`, 
+                components: [], 
+                files: [] 
+            });
+
+            const filter = m => m.author.id === interaction.user.id;
+            const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
+
+            collector.on('collect', async m => {
+                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+                const logEmbed = new EmbedBuilder()
+                    .setTitle("💳 ĐƠN THẺ CÀO MỚI")
+                    .setColor("#9b59b6")
+                    .addFields(
+                        { name: "👤 Khách", value: `<@${interaction.user.id}>`, inline: true },
+                        { name: "📦 Món", value: parts[1].toUpperCase(), inline: true },
+                        { name: "💰 Giá niêm yết", value: parts[2], inline: true },
+                        { name: "🎫 Thông tin thẻ", value: `\`${m.content}\`` },
+                        { name: "⚠️ Chiết khấu", value: "15% (Garena/Viettel)" }
+                    );
+
+                const adminRow = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId(`approve_${interaction.user.id}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId(`done_${interaction.user.id}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
+                    new ButtonBuilder().setCustomId(`deny_${interaction.user.id}`).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
+                );
+
+                if (logChannel) logChannel.send({ content: `🔔 <@${ADMIN_ID}> CÓ ĐƠN THẺ CÀO!`, embeds: [logEmbed], components: [adminRow] });
+                m.reply("✅ Đã gửi thông tin thẻ cho Admin. Vui lòng chờ kiểm tra!");
+            });
+        }
+
+        // XỬ LÝ THANH TOÁN CHUYỂN KHOẢN
         if (parts[0] === 'paid') {
             await interaction.update({ content: "⏳ Hãy gửi **Ảnh Bill** vào đây! (Bot sẽ xóa sau 1 phút)", components: [] });
             const filter = m => m.author.id === interaction.user.id && m.attachments.size > 0;
             const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
             collector.on('collect', async m => {
-                const billUrl = m.attachments.first().proxyURL; // Dùng proxyURL để ổn định hơn
+                const billUrl = m.attachments.first().proxyURL;
                 const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
                 const logEmbed = new EmbedBuilder()
-                    .setTitle("🆕 ĐƠN MỚI")
+                    .setTitle("🆕 ĐƠN CHUYỂN KHOẢN")
                     .addFields({ name: "👤 Khách", value: `<@${m.author.id}>` }, { name: "📦 Món", value: parts[1].toUpperCase() }, { name: "💰 Giá", value: parts[2] })
                     .setImage(billUrl).setColor("#ffff00");
                 const row = new ActionRowBuilder().addComponents(
@@ -114,47 +159,40 @@ client.on("interactionCreate", async (interaction) => {
             });
         }
 
+        // ADMIN XỬ LÝ
         if (['approve', 'done', 'deny'].includes(parts[0])) {
             if (interaction.user.id !== ADMIN_ID) return interaction.reply({ content: "Quyền hạn Admin!", ephemeral: true });
             const targetUser = await client.users.fetch(parts[1]).catch(() => null);
 
             if (parts[0] === 'approve') {
-                const updatedEmbed = EmbedBuilder.from(interaction.message.embeds[0]).setTitle("✅ ĐÃ NHẬN TIỀN - CHỜ GIAO");
+                const updatedEmbed = EmbedBuilder.from(interaction.message.embeds[0]).setTitle("✅ ĐÃ XÁC NHẬN THANH TOÁN");
                 await interaction.update({ embeds: [updatedEmbed] });
-                if (targetUser) targetUser.send("✅ Tiền đã nhận! Chờ Admin giao đồ nhé.");
+                if (targetUser) targetUser.send("✅ Admin đã xác nhận thanh toán thành công! Vui lòng chờ giao đồ.");
             } else if (parts[0] === 'done') {
-                await interaction.reply({ content: "📸 Admin gửi **Ảnh Proof giao đồ** vào đây ngay!", ephemeral: true });
+                await interaction.reply({ content: "📸 Admin gửi **Ảnh Proof giao đồ** vào đây!", ephemeral: true });
                 const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
                 const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
 
                 collector.on('collect', async m => {
-                    const proofUrl = m.attachments.first().proxyURL; // Lấy URL proxy để ảnh không bị mất khi tin nhắn bị xóa
+                    const proofUrl = m.attachments.first().proxyURL;
                     const doneChan = client.channels.cache.get(DONE_LOG_CHANNEL_ID);
                     const oldEmbed = interaction.message.embeds[0];
 
                     const doneEmbed = new EmbedBuilder()
-                        .setTitle("🏁 ĐƠN HÀNG HOÀN TẤT")
+                        .setTitle("🏁 ĐƠN HÀNG HOÀT TẤT")
                         .addFields(oldEmbed.fields)
                         .setImage(proofUrl)
                         .setColor("#00ff00")
                         .setTimestamp();
 
-                    if (doneChan) {
-                        // Gửi ảnh dưới dạng file đính kèm ĐỂ CHẮC CHẮN ẢNH KHÔNG BỊ LỖI
-                        await doneChan.send({ embeds: [doneEmbed], files: [m.attachments.first().url] });
-                    }
-                    
-                    await interaction.message.edit({ 
-                        embeds: [EmbedBuilder.from(oldEmbed).setTitle("🏁 ĐƠN ĐÃ XONG (CHECK LOG)")], 
-                        components: [] 
-                    });
-
+                    if (doneChan) await doneChan.send({ embeds: [doneEmbed], files: [m.attachments.first().url] });
+                    await interaction.message.edit({ embeds: [EmbedBuilder.from(oldEmbed).setTitle("🏁 ĐƠN ĐÃ XONG (CHECK LOG)")], components: [] });
                     if (targetUser) targetUser.send("🏁 Đơn hàng đã hoàn tất! Cảm ơn bạn.");
                     m.delete().catch(() => {});
                 });
             } else if (parts[0] === 'deny') {
-                await interaction.update({ content: "❌ Đã từ chối đơn hàng.", embeds: [], components: [] });
-                if (targetUser) targetUser.send("❌ Đơn bị từ chối.");
+                await interaction.update({ content: "❌ Đơn hàng đã bị từ chối.", embeds: [], components: [] });
+                if (targetUser) targetUser.send("❌ Đơn hàng bị từ chối. Vui lòng liên hệ Admin.");
             }
         }
     }
