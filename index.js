@@ -19,15 +19,17 @@ const client = new Client({
 // --- CẤU HÌNH ---
 const ADMIN_ID = "1105058130246770758";
 const LOG_CHANNEL_ID = "1479690248513519667"; 
-const CHAT_CHUNG_ID = "1471142835414765681"; // Dán ID kênh chat chung vào đây để chặn
-let orderCount = 0;
+const CHAT_CHUNG_ID = "1471142835414765681"; 
 
 const prices = {
-    "drop": "170K", "notifier": "370K", "mastery": "55K", "money": "69K", 
+    // Game Pass & Robux - Dark Blade giữ giá 170K như Drop Chance cũ
+    "darkblade": "170K", "notifier": "370K", "mastery": "55K", "money": "69K", 
     "bossdrop": "69K", "boat": "55K", "storage": "62K", "200rb": "50K",
+    // Perm Fruit Nhóm 1
     "rocket": "8K", "spin": "12K", "chop": "15K", "spring": "26K", "bomb": "31K",
     "smoke": "35K", "spike": "52K", "flame": "76K", "ice": "108K", "sand": "121K",
     "dark": "134K", "light": "137K", "diamond": "156K", "rubber": "168K", "ghost": "178K",
+    // Perm Fruit Nhóm 2
     "magma": "200K", "love": "244K", "buddha": "239K", "portal": "252K", "rumble": "264K",
     "phoenix": "278K", "sound": "291K", "blizzard": "291K", "gravity": "307K", 
     "dough": "314K", "shadow": "320K", "venom": "326K", "control": "332K", 
@@ -39,17 +41,27 @@ client.once("ready", () => {
     console.log(`✅ Bot Dexsty Shop đã online: ${client.user.tag}`);
 });
 
+// --- PHẦN 1: XỬ LÝ LỆNH CHAT ---
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
-    // CHẶN BOT TẠI KÊNH CHAT CHUNG
-    if (message.channel.id === CHAT_CHUNG_ID) return;
+    // KIỂM TRA KÊNH CHAT CHUNG
+    if (message.channel.id === CHAT_CHUNG_ID) {
+        const botCommands = ["!menu", "!admin", "!gaytest"];
+        if (botCommands.some(cmd => message.content.startsWith(cmd))) {
+            return message.reply({ 
+                content: "❌ **Thông báo:** Bot không được phép sử dụng tại kênh Chat Chung. Vui lòng sang kênh lệnh riêng để sử dụng nhé! ❤️",
+            }).then(msg => {
+                setTimeout(() => msg.delete().catch(() => {}), 5000); 
+            });
+        }
+        return;
+    }
 
-    // 1. LỆNH GAYTEST (0 - 10)
+    // 1. Lệnh !gaytest
     if (message.content === "!gaytest") {
-        const score = Math.floor(Math.random() * 11); // Ngẫu nhiên từ 0 đến 10
+        const score = Math.floor(Math.random() * 11);
         let comment = "";
-
         if (score <= 2) comment = "🗿 Thẳng tắp như thước kẻ, uy tín luôn!";
         else if (score <= 5) comment = "🤨 Có chút dấu hiệu nghi vấn nhẹ...";
         else if (score <= 8) comment = "🌈 Khá là 'rainbow' rồi đấy bạn ơi!";
@@ -58,14 +70,14 @@ client.on("messageCreate", async (message) => {
         return message.reply(`🌈 **KẾT QUẢ GAY TEST**\n\n${message.author} có độ gay là: **${score}/10**\n=> *${comment}*`);
     }
 
-    // 2. LỆNH MENU
+    // 2. Lệnh !menu
     if (message.content === '!menu') {
         const row1 = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder()
                 .setCustomId('menu_gamepass')
                 .setPlaceholder('🎮 Chọn Game Pass / Robux')
                 .addOptions([
-                    { label: '2x Drop Chance', value: 'drop', description: '170K' },
+                    { label: 'Dark Blade', value: 'darkblade', description: '170K' },
                     { label: 'Fruit Notifier', value: 'notifier', description: '370K' },
                     { label: '2x Mastery', value: 'mastery', description: '55K' },
                     { label: '2x Money', value: 'money', description: '69K' },
@@ -136,7 +148,7 @@ client.on("messageCreate", async (message) => {
         return message.channel.send({ embeds: [embed], components: [row1, row2, row3] });
     }
 
-    // 3. LỆNH ADMIN
+    // 3. Lệnh !admin
     if (message.content === "!admin") {
         const embedAdmin = new EmbedBuilder()
             .setColor(0xff66cc)
@@ -156,11 +168,13 @@ client.on("messageCreate", async (message) => {
     }
 });
 
-// --- PHẦN XỬ LÝ TƯƠNG TÁC (MENU & BUTTON) ---
+// --- PHẦN 2: XỬ LÝ TƯƠNG TÁC (MENU & BUTTON) ---
 client.on("interactionCreate", async (interaction) => {
+    
     if (interaction.isStringSelectMenu()) {
         const selectedValue = interaction.values[0];
         const priceStr = prices[selectedValue] || "Liên hệ Admin";
+        
         const amount = parseInt(priceStr.replace(/K/g, '')) * 1000 || 0;
         const info = `Thanh toan ${selectedValue.toUpperCase()} shop Dexsty`;
         const description = encodeURIComponent(info);
@@ -169,7 +183,11 @@ client.on("interactionCreate", async (interaction) => {
 
         const invoice = `## 🧾 HÓA ĐƠN DEXSTY SHOP\n👤 **Khách hàng:** ${interaction.user.username}\n📦 **Dịch vụ:** ${selectedValue.toUpperCase()}\n💰 **Giá tiền:** ${priceStr}\n──────────────────\n🏦 **Thông tin thanh toán (VIETCOMBANK):**\n- **Ngân hàng:** Vietcombank (VCB)\n- **STK:** 1044627277\n- **Chủ TK:** BUI THANH SON\n- **Nội dung CK:** \`${info}\`\n──────────────────\n*(Quét mã QR để thanh toán tự động)*`;
 
-        return await interaction.reply({ content: invoice, files: [qrUrl], ephemeral: true });
+        return await interaction.reply({ 
+            content: invoice, 
+            files: [qrUrl], 
+            ephemeral: true 
+        });
     }
 
     if (interaction.isButton()) {
