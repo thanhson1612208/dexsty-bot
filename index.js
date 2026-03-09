@@ -19,9 +19,9 @@ const client = new Client({
 // --- CẤU HÌNH ---
 const ADMIN_ID = "1105058130246770758";
 const LOG_CHANNEL_ID = "1479690248513519667"; 
+const CHAT_CHUNG_ID = "1471142835414765681"; // Dán ID kênh chat chung vào đây để chặn
 let orderCount = 0;
 
-// Cập nhật giá chính xác theo ảnh bảng giá
 const prices = {
     "drop": "170K", "notifier": "370K", "mastery": "55K", "money": "69K", 
     "bossdrop": "69K", "boat": "55K", "storage": "62K", "200rb": "50K",
@@ -42,13 +42,30 @@ client.once("ready", () => {
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
+    // CHẶN BOT TẠI KÊNH CHAT CHUNG
+    if (message.channel.id === CHAT_CHUNG_ID) return;
+
+    // 1. LỆNH GAYTEST (0 - 10)
+    if (message.content === "!gaytest") {
+        const score = Math.floor(Math.random() * 11); // Ngẫu nhiên từ 0 đến 10
+        let comment = "";
+
+        if (score <= 2) comment = "🗿 Thẳng tắp như thước kẻ, uy tín luôn!";
+        else if (score <= 5) comment = "🤨 Có chút dấu hiệu nghi vấn nhẹ...";
+        else if (score <= 8) comment = "🌈 Khá là 'rainbow' rồi đấy bạn ơi!";
+        else comment = "🏳️‍🌈 Chúc mừng! Bạn chính là Gay Chúa của server!";
+
+        return message.reply(`🌈 **KẾT QUẢ GAY TEST**\n\n${message.author} có độ gay là: **${score}/10**\n=> *${comment}*`);
+    }
+
+    // 2. LỆNH MENU
     if (message.content === '!menu') {
         const row1 = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder()
                 .setCustomId('menu_gamepass')
                 .setPlaceholder('🎮 Chọn Game Pass / Robux')
                 .addOptions([
-                    { label: 'Dark Blade', value: 'drop', description: '170K' },
+                    { label: '2x Drop Chance', value: 'drop', description: '170K' },
                     { label: 'Fruit Notifier', value: 'notifier', description: '370K' },
                     { label: '2x Mastery', value: 'mastery', description: '55K' },
                     { label: '2x Money', value: 'money', description: '69K' },
@@ -119,11 +136,12 @@ client.on("messageCreate", async (message) => {
         return message.channel.send({ embeds: [embed], components: [row1, row2, row3] });
     }
 
+    // 3. LỆNH ADMIN
     if (message.content === "!admin") {
         const embedAdmin = new EmbedBuilder()
             .setColor(0xff66cc)
             .setTitle("👑 ADMIN DEXSTY BLOX FRUITS SHOP")
-            .setDescription("💬 Có vấn đề hay thắc mắc thì inbox cho admin :")
+            .setDescription("💬 Cần mua dịch vụ Blox Fruits hãy liên hệ admin:")
             .addFields(
                 { name: "💬 Zalo / SĐT", value: "📱 **0762706736**" },
                 { name: "⚡ Thời gian phản hồi", value: "⏰ 1 - 5 phút" }
@@ -138,6 +156,7 @@ client.on("messageCreate", async (message) => {
     }
 });
 
+// --- PHẦN XỬ LÝ TƯƠNG TÁC (MENU & BUTTON) ---
 client.on("interactionCreate", async (interaction) => {
     if (interaction.isStringSelectMenu()) {
         const selectedValue = interaction.values[0];
@@ -173,5 +192,4 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-client.login(process.env.TOKEN); 
- 
+client.login(process.env.TOKEN);
