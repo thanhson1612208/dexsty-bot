@@ -18,8 +18,8 @@ const client = new Client({
 
 // --- CẤU HÌNH ---
 const ADMIN_ID = "1105058130246770758";
-const LOG_CHANNEL_ID = "1479690248513519667"; // Kênh Admin duyệt đơn
-const DONE_LOG_CHANNEL_ID = "1479514742841409576"; // Kênh lưu lịch sử đơn đã xong
+const LOG_CHANNEL_ID = "1479690248513519667"; 
+const DONE_LOG_CHANNEL_ID = "1479514742841409576"; 
 const CHAT_CHUNG_ID = "1471142835414765681"; 
 
 const prices = {
@@ -41,64 +41,38 @@ client.once("ready", () => {
 
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
-
     if (message.channel.id === CHAT_CHUNG_ID) {
         const botCommands = ["!menu", "!admin", "!gaytest"];
         if (botCommands.some(cmd => message.content.startsWith(cmd))) {
-            return message.reply("❌ **Thông báo:** Vui lòng sang kênh lệnh riêng để sử dụng Bot!")
+            return message.reply("❌ Không dùng lệnh ở đây! Sang kênh lệnh riêng nhé.")
                 .then(msg => setTimeout(() => msg.delete().catch(() => {}), 5000));
         }
         return;
     }
-
     if (message.content === "!gaytest") {
         const score = Math.floor(Math.random() * 11);
-        return message.reply(`🌈 **KẾT QUẢ GAY TEST**\n\n${message.author} có độ gay là: **${score}/10**`);
+        return message.reply(`🌈 Độ gay của ${message.author} là: **${score}/10**`);
     }
-
     if (message.content === '!menu') {
         const row1 = new ActionRowBuilder().addComponents(
-            new StringSelectMenuBuilder().setCustomId('menu_p1').setPlaceholder('🍎 Perm Fruits - Trang 1 (Giá Rẻ)').addOptions([
-                { label: 'Perm Rocket', value: 'rocket', description: '8K' }, { label: 'Perm Spin', value: 'spin', description: '12K' },
-                { label: 'Perm Chop', value: 'chop', description: '15K' }, { label: 'Perm Spring', value: 'spring', description: '26K' },
-                { label: 'Perm Bomb', value: 'bomb', description: '31K' }, { label: 'Perm Smoke', value: 'smoke', description: '35K' },
-                { label: 'Perm Spike', value: 'spike', description: '52K' }, { label: 'Perm Flame', value: 'flame', description: '76K' },
-                { label: 'Perm Ice', value: 'ice', description: '108K' }, { label: 'Perm Sand', value: 'sand', description: '121K' },
-                { label: 'Perm Dark', value: 'dark', description: '134K' }, { label: 'Perm Light', value: 'light', description: '137K' },
-                { label: 'Perm Diamond', value: 'diamond', description: '156K' }, { label: 'Perm Rubber', value: 'rubber', description: '168K' },
-                { label: 'Perm Ghost', value: 'ghost', description: '178K' },
-            ])
+            new StringSelectMenuBuilder().setCustomId('menu_p1').setPlaceholder('🍎 Trái Vĩnh Viễn 1').addOptions(
+                Object.entries(prices).slice(0, 15).map(([k, v]) => ({ label: `Perm ${k}`, value: k, description: v }))
+            )
         );
-
         const row2 = new ActionRowBuilder().addComponents(
-            new StringSelectMenuBuilder().setCustomId('menu_p2').setPlaceholder('🔥 Perm Fruits - Trang 2 (Cao Cấp)').addOptions([
-                { label: 'Perm Magma', value: 'magma', description: '200K' }, { label: 'Perm Buddha', value: 'buddha', description: '239K' },
-                { label: 'Perm Love', value: 'love', description: '244K' }, { label: 'Perm Portal', value: 'portal', description: '252K' },
-                { label: 'Perm Rumble', value: 'rumble', description: '264K' }, { label: 'Perm Phoenix', value: 'phoenix', description: '278K' },
-                { label: 'Perm Blizzard', value: 'blizzard', description: '291K' }, { label: 'Perm Sound', value: 'sound', description: '291K' },
-                { label: 'Perm Gravity', value: 'gravity', description: '307K' }, { label: 'Perm Dough', value: 'dough', description: '314K' },
-                { label: 'Perm Shadow', value: 'shadow', description: '320K' }, { label: 'Perm Venom', value: 'venom', description: '326K' },
-                { label: 'Perm Spirit', value: 'spirit', description: '332K' }, { label: 'Perm Control', value: 'control', description: '332K' },
-                { label: 'Perm T-Rex', value: 'trex', description: '341K' }, { label: 'Perm Mammoth', value: 'mammoth', description: '348K' },
-                { label: 'Perm Leopard', value: 'leopard', description: '425K' }, { label: 'Perm Yeti', value: 'yeti', description: '425K' },
-                { label: 'Perm Kitsune', value: 'kitsune', description: '574K' }, { label: 'Perm Dragon', value: 'dragon', description: '700K' },
-            ])
+            new StringSelectMenuBuilder().setCustomId('menu_p2').setPlaceholder('🍎 Trái Vĩnh Viễn 2').addOptions(
+                Object.entries(prices).slice(15, 35).map(([k, v]) => ({ label: `Perm ${k}`, value: k, description: v }))
+            )
         );
-
         const row3 = new ActionRowBuilder().addComponents(
-            new StringSelectMenuBuilder().setCustomId('menu_gp').setPlaceholder('🎮 Game Pass & Robux').addOptions([
-                { label: '200 Robux (120H)', value: '200rb', description: '50K' }, { label: '2x Mastery', value: 'mastery', description: '55K' },
-                { label: 'Fast Boat', value: 'boat', description: '55K' }, { label: '+1 Storage', value: 'storage', description: '62K' },
-                { label: '2x Money', value: 'money', description: '69K' }, { label: '2x Boss Drop', value: 'bossdrop', description: '69K' },
-                { label: 'Dark Blade', value: 'darkblade', description: '170K' }, { label: 'Fruit Notifier', value: 'notifier', description: '370K' },
-            ])
+            new StringSelectMenuBuilder().setCustomId('menu_gp').setPlaceholder('🎮 Gamepass/Robux').addOptions(
+                Object.entries(prices).slice(35).map(([k, v]) => ({ label: k.toUpperCase(), value: k, description: v }))
+            )
         );
-
         const embed = new EmbedBuilder()
-            .setTitle('🛒 DEX CĂNG ĐÉT - BẢNG GIÁ DỊCH VỤ')
+            .setTitle('🛒 DEX CĂNG ĐÉT - SHOP BLOX FRUIT')
             .setColor('#00ffcc')
             .setImage('https://i.postimg.cc/j2hHsYHp/IMG-20260309-004009.jpg');
-
         return message.channel.send({ embeds: [embed], components: [row1, row2, row3] });
     }
 });
@@ -106,114 +80,57 @@ client.on("messageCreate", async (message) => {
 client.on("interactionCreate", async (interaction) => {
     if (interaction.isStringSelectMenu()) {
         const val = interaction.values[0];
-        const price = prices[val] || "170K";
-        const amount = parseInt(price.replace(/K/g, '')) * 1000;
+        const price = prices[val] || "N/A";
         const info = `Thanh toan ${val.toUpperCase()} shop Dexsty`;
-        const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=${encodeURIComponent(info)}`;
-
-        const invoice = `## 🧾 HÓA ĐƠN TẠM TÍNH\n📦 **Món:** ${val.toUpperCase()}\n💰 **Giá:** ${price}\n📝 **Nội dung:** \`${info}\`\n\n*(Sau khi CK, bấm nút để gửi Bill)*`;
-
+        const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${parseInt(price)*1000}&addInfo=${encodeURIComponent(info)}`;
         const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId(`paid_${val}_${price}`).setLabel('✅ Tôi đã chuyển khoản').setStyle(ButtonStyle.Success)
+            new ButtonBuilder().setCustomId(`paid_${val}_${price}`).setLabel('✅ Đã chuyển khoản').setStyle(ButtonStyle.Success)
         );
-
-        return await interaction.reply({ content: invoice, files: [qrUrl], components: [row], ephemeral: true });
+        return await interaction.reply({ content: `📦 **Món:** ${val.toUpperCase()}\n💰 **Giá:** ${price}`, files: [qrUrl], components: [row], ephemeral: true });
     }
 
     if (interaction.isButton()) {
         const parts = interaction.customId.split('_');
         
-        // KHÁCH GỬI BILL CHUYỂN KHOẢN
         if (parts[0] === 'paid') {
-            await interaction.update({ content: "⏳ Gửi **Ảnh Bill** vào đây! Bot sẽ xóa ảnh sau 1 phút.", components: [], files: [] });
-            
+            await interaction.update({ content: "⏳ Hãy gửi **Ảnh Bill** vào đây! (Bot sẽ xóa sau 1 phút)", components: [] });
             const filter = m => m.author.id === interaction.user.id && m.attachments.size > 0;
             const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
-
             collector.on('collect', async m => {
+                const billUrl = m.attachments.first().proxyURL; // Dùng proxyURL để ổn định hơn
                 const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
-                const billUrl = m.attachments.first().url;
-                
                 const logEmbed = new EmbedBuilder()
-                    .setTitle("🆕 ĐƠN MỚI CHỜ DUYỆT")
-                    .setColor("#ffff00")
-                    .addFields(
-                        { name: "👤 Khách", value: `<@${interaction.user.id}>`, inline: true },
-                        { name: "📦 Món", value: parts[1].toUpperCase(), inline: true },
-                        { name: "💰 Giá", value: parts[2], inline: true }
-                    ).setImage(billUrl);
-
-                const adminRow = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId(`approve_${interaction.user.id}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
-                    new ButtonBuilder().setCustomId(`done_${interaction.user.id}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
-                    new ButtonBuilder().setCustomId(`deny_${interaction.user.id}`).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
+                    .setTitle("🆕 ĐƠN MỚI")
+                    .addFields({ name: "👤 Khách", value: `<@${m.author.id}>` }, { name: "📦 Món", value: parts[1].toUpperCase() }, { name: "💰 Giá", value: parts[2] })
+                    .setImage(billUrl).setColor("#ffff00");
+                const row = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId(`approve_${m.author.id}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId(`done_${m.author.id}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
+                    new ButtonBuilder().setCustomId(`deny_${m.author.id}`).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
                 );
-
-                if (logChannel) logChannel.send({ content: `🔔 <@${ADMIN_ID}>`, embeds: [logEmbed], components: [adminRow] });
-                
-                const replyMsg = await m.reply("✅ Đã gửi bill! Ảnh của bạn sẽ tự động xóa sau 1 phút.");
-                setTimeout(() => { m.delete().catch(() => {}); replyMsg.delete().catch(() => {}); }, 60000);
+                if (logChannel) logChannel.send({ embeds: [logEmbed], components: [row] });
+                const rep = await m.reply("✅ Đã gửi bill! Ảnh sẽ xóa sau 1 phút.");
+                setTimeout(() => { m.delete().catch(() => {}); rep.delete().catch(() => {}); }, 60000);
             });
         }
 
-        // ADMIN XỬ LÝ ĐƠN
         if (['approve', 'done', 'deny'].includes(parts[0])) {
-            if (interaction.user.id !== ADMIN_ID) return interaction.reply({ content: "Chỉ Admin mới có quyền!", ephemeral: true });
-            
-            const targetUserId = parts[1];
-            const targetUser = await client.users.fetch(targetUserId).catch(() => null);
-            const oldEmbed = interaction.message.embeds[0];
+            if (interaction.user.id !== ADMIN_ID) return interaction.reply({ content: "Quyền hạn Admin!", ephemeral: true });
+            const targetUser = await client.users.fetch(parts[1]).catch(() => null);
 
             if (parts[0] === 'approve') {
-                const approvedEmbed = EmbedBuilder.from(oldEmbed).setColor("#0000ff").setTitle("✅ TIỀN ĐÃ VÀO - CHỜ GIAO ĐỒ");
-                await interaction.update({ embeds: [approvedEmbed] });
-                if (targetUser) targetUser.send("✅ Admin đã xác nhận nhận được tiền! Vui lòng chờ Admin giao đồ.");
-            } 
-
-            else if (parts[0] === 'done') {
-                // Bước 1: Yêu cầu Admin gửi ảnh Proof đã giao đồ
-                await interaction.reply({ content: "📸 Admin hãy gửi **Ảnh Proof đã giao đồ** vào đây để hoàn tất!", ephemeral: true });
-
+                const updatedEmbed = EmbedBuilder.from(interaction.message.embeds[0]).setTitle("✅ ĐÃ NHẬN TIỀN - CHỜ GIAO");
+                await interaction.update({ embeds: [updatedEmbed] });
+                if (targetUser) targetUser.send("✅ Tiền đã nhận! Chờ Admin giao đồ nhé.");
+            } else if (parts[0] === 'done') {
+                await interaction.reply({ content: "📸 Admin gửi **Ảnh Proof giao đồ** vào đây ngay!", ephemeral: true });
                 const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
                 const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
 
                 collector.on('collect', async m => {
-                    const doneProofUrl = m.attachments.first().url;
-                    const doneLogChannel = client.channels.cache.get(DONE_LOG_CHANNEL_ID);
+                    const proofUrl = m.attachments.first().proxyURL; // Lấy URL proxy để ảnh không bị mất khi tin nhắn bị xóa
+                    const doneChan = client.channels.cache.get(DONE_LOG_CHANNEL_ID);
+                    const oldEmbed = interaction.message.embeds[0];
 
-                    // Bước 2: Gửi vào kênh Done Đơn (1479514742841409576)
-                    const doneLogEmbed = new EmbedBuilder()
-                        .setTitle("🏁 ĐƠN HÀNG ĐÃ HOÀN TẤT")
-                        .setColor("#00ff00")
-                        .addFields(
-                            { name: "👤 Khách hàng", value: `<@${targetUserId}>`, inline: true },
-                            { name: "📦 Món hàng", value: oldEmbed.fields.find(f => f.name === "📦 Món").value, inline: true },
-                            { name: "💰 Giá tiền", value: oldEmbed.fields.find(f => f.name === "💰 Giá").value, inline: true }
-                        )
-                        .setImage(doneProofUrl)
-                        .setTimestamp();
-
-                    if (doneLogChannel) doneLogChannel.send({ embeds: [doneLogEmbed] });
-
-                    // Bước 3: Cập nhật tin nhắn ở kênh Log duyệt đơn
-                    const finalEmbed = EmbedBuilder.from(oldEmbed).setColor("#00ff00").setTitle("🏁 ĐƠN HÀNG HOÀN TẤT (ĐÃ LƯU LOG)");
-                    await interaction.editReply({ content: "✅ Đã lưu bằng chứng giao đồ vào kênh Done Đơn!", ephemeral: true });
-                    await interaction.message.edit({ embeds: [finalEmbed], components: [] });
-
-                    // Bước 4: Thông báo cho khách
-                    if (targetUser) targetUser.send("🏁 Đơn hàng của bạn đã hoàn tất! Cảm ơn bạn đã tin tưởng Dexsty Shop.");
-                    
-                    // Xóa tin nhắn ảnh của Admin cho sạch
-                    m.delete().catch(() => {});
-                });
-            } 
-
-            else if (parts[0] === 'deny') {
-                await interaction.update({ content: `❌ Đã từ chối đơn của <@${targetUserId}>`, embeds: [], components: [] });
-                if (targetUser) targetUser.send("❌ Đơn hàng bị từ chối. Vui lòng kiểm tra lại bill.");
-            }
-        }
-    }
-});
-
-client.login(process.env.TOKEN);
+                    const doneEmbed = new EmbedBuilder()
+                        .setTitle("🏁 ĐƠN HÀNG HOÀN TẤT")
