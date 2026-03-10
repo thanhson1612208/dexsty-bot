@@ -7,6 +7,14 @@ const {
     EmbedBuilder, 
     StringSelectMenuBuilder 
 } = require('discord.js');
+const express = require('express');
+const app = express();
+app.get('/', (req, res) => {
+  res.send('Bot Dexsty Shop đang chạy!');
+});
+app.listen(10000, () => {
+  console.log('✅ Cổng Web đã mở thành công!');
+});
 
 const client = new Client({
     intents: [
