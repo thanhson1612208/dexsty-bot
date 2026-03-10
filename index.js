@@ -2,30 +2,39 @@ const { Client, GatewayIntentBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder
 const express = require('express');
 const app = express();
 
-// PORT CỦA RENDER
+// --- PHẦN WEB (GIỮ CHO RENDER KHÔNG NGỦ) ---
 app.get('/', (req, res) => res.send('Bot Online!'));
-app.listen(10000, () => console.log('✅ Web Server đã mở tại cổng 10000'));
-
-const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent]
+const server = app.listen(process.env.PORT || 10000, () => {
+    console.log('✅ Web Server is running');
 });
 
-// CẤU HÌNH CỦA BẠN
+// --- PHẦN BOT DISCORD ---
+const client = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
+    ]
+});
+
+// ID CỐ ĐỊNH CỦA BẠN
 const ADMIN_ID = '1105058130246770759';
 const LOG_CHANNEL_ID = '1479690248512519667';
 const DONE_LOG_CHANNEL_ID = '1479514742941409576';
 
-const prices = { "rocket": "8K", "kitsune": "574K", "dragon": "700K" }; // Bạn có thể thêm các món khác sau
-
 client.once("ready", () => {
-    console.log(`✅ Bot ${client.user.tag} ĐÃ ONLINE!`);
+    console.log(`✅ BOT ĐÃ ONLINE: ${client.user.tag}`);
 });
 
+// Test lệnh đơn giản nhất
 client.on("messageCreate", async (message) => {
     if (message.content === '!menu') {
-        const embed = new EmbedBuilder().setTitle('🛒 SHOP BLOX FRUIT').setColor('#00ffcc');
-        message.channel.send({ embeds: [embed], content: "Bot đã nhận lệnh!" });
+        message.reply("Bot Dexsty đã nhận lệnh! Chờ mình một chút nhé.");
     }
 });
 
-client.login(process.env.TOKEN).catch(err => console.error("❌ Lỗi Token: ", err.message));
+// LOGIN VỚI TOKEN TỪ ENVIRONMENT
+client.login(process.env.TOKEN).catch(err => {
+    console.error("❌ LỖI TOKEN RỒI:");
+    console.error(err);
+});
