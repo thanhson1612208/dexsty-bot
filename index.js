@@ -37,7 +37,7 @@ const prices = {
 };
 
 client.once("ready", () => {
-    console.log(`✅ Bot Dexsty Shop đã online: ${client.user.tag}`); //
+    console.log(`✅ Bot Dexsty Shop đã online: ${client.user.tag}`);
 });
 
 process.on('unhandledRejection', error => { console.error('Lỗi hệ thống:', error); });
@@ -56,7 +56,7 @@ client.on("messageCreate", async (message) => {
 
     if (message.content === "!gaytest") {
         const score = Math.floor(Math.random() * 11);
-        return message.reply(`🌈 Độ gay của ${message.author} là: **${score}/10**`); //
+        return message.reply(`🌈 Độ gay của ${message.author} là: **${score}/10**`);
     }
 
     if (message.content === '!menu') {
@@ -76,7 +76,7 @@ client.on("messageCreate", async (message) => {
             )
         );
         const embed = new EmbedBuilder()
-            .setTitle('🛒 DEX CĂNG ĐÉT - SHOP BLOX FRUIT') //
+            .setTitle('🛒 DEX CĂNG ĐÉT - SHOP BLOX FRUIT')
             .setColor('#00ffcc')
             .setImage('https://i.postimg.cc/j2hHsYHp/IMG-20260309-004009.jpg');
         
@@ -87,7 +87,7 @@ client.on("messageCreate", async (message) => {
 client.on("interactionCreate", async (interaction) => {
     if (interaction.isStringSelectMenu()) {
         try {
-            await interaction.deferReply({ ephemeral: true }); //
+            await interaction.deferReply({ ephemeral: true });
             const val = interaction.values[0];
             const priceStr = prices[val] || "0";
             const amount = parseInt(priceStr.replace(/K/g, '')) * 1000;
@@ -159,7 +159,6 @@ client.on("interactionCreate", async (interaction) => {
             else if (parts[0] === 'done') {
                 await interaction.reply({ content: "📸 Admin gửi **Ảnh Proof** giao đồ vào kênh này!", ephemeral: true });
                 
-                // Bộ lọc chỉ chấp nhận ảnh từ Admin gửi vào kênh Log
                 const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
                 const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
                 
@@ -170,7 +169,7 @@ client.on("interactionCreate", async (interaction) => {
                     const giaTien = oldEmbed.fields.find(f => f.name === "💰 Giá")?.value || "N/A";
 
                     const doneEmbed = new EmbedBuilder()
-                        .setTitle("🏁 ĐƠN HÀNG HOÀN TẤT THÀNH CÔNG") //
+                        .setTitle("🏁 ĐƠN HÀNG HOÀN TẤT THÀNH CÔNG")
                         .setAuthor({ name: 'Dexsty Shop - Uy Tín Số 1', iconURL: client.user.displayAvatarURL() })
                         .setColor("#2ecc71")
                         .addFields(
@@ -178,13 +177,12 @@ client.on("interactionCreate", async (interaction) => {
                             { name: "📦 Món hàng", value: `**${monHang}**`, inline: true },
                             { name: "💰 Tổng tiền", value: `\`${giaTien}\``, inline: true }
                         )
-                        .setImage(m.attachments.first().proxyURL) // Ảnh này sẽ được log sang kênh Done
+                        .setImage(m.attachments.first().proxyURL)
                         .setFooter({ text: `Cảm ơn bạn đã tin tưởng!`, iconURL: interaction.user.displayAvatarURL() })
                         .setTimestamp();
 
                     if (doneChan) await doneChan.send({ content: `🎊 Đã xong đơn cho <@${targetUserId}>`, embeds: [doneEmbed] });
                     
-                    // Cập nhật trạng thái tại kênh Log Admin
                     await interaction.message.edit({ 
                         content: `🏁 ĐƠN ĐÃ XONG!`, 
                         embeds: [EmbedBuilder.from(oldEmbed).setTitle("🏁 ĐƠN ĐÃ HOÀN TẤT").setColor("#2ecc71")], 
@@ -193,8 +191,7 @@ client.on("interactionCreate", async (interaction) => {
 
                     if (targetUser) targetUser.send("🏁 Đơn hàng hoàn tất! Cảm ơn bạn.");
                     
-                    // QUAN TRỌNG: Xóa tin nhắn ảnh Admin vừa gửi ở kênh Log để không bị xía/rác
-                    m.delete().catch(() => {}); 
+                    // TÍNH NĂNG XÓA ẢNH ADMIN ĐÃ ĐƯỢC TẮT TẠI ĐÂY
                 });
             } 
             else if (parts[0] === 'deny') {
