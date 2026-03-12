@@ -263,5 +263,5 @@ client.on("interactionCreate", async (interaction) => {
     }
 });
 
-client.login("TOKEN_CUA_BAN_O_DAY");
+client.login(process.env.TOKEN);
  
