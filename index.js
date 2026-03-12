@@ -59,6 +59,34 @@ client.on("messageCreate", async (message) => {
         return message.reply(`🌈 Độ gay của ${message.author} là: **${score}/10**`);
     }
 
+    // Lệnh !admin với nút bấm Link
+    if (message.content === "!admin") {
+        const adminEmbed = new EmbedBuilder()
+            .setTitle("📞 THÔNG TIN LIÊN HỆ ADMIN")
+            .setColor("#3498db")
+            .setThumbnail(client.user.displayAvatarURL())
+            .setDescription("Nếu gặp khó khăn trong việc thanh toán hoặc cần hỗ trợ về đơn hàng, hãy liên hệ với mình qua các kênh dưới đây:")
+            .addFields(
+                { name: "📱 Số Zalo", value: "`0762706736`", inline: true },
+                { name: "🌐 Facebook", value: "Dexsty", inline: true }
+            )
+            .setFooter({ text: "Hỗ trợ 24/7 khi gặp sự cố đơn hàng" })
+            .setTimestamp();
+
+        const adminRow = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setLabel('Liên hệ Facebook')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://www.facebook.com/share/17P4Xrx6bf/'),
+            new ButtonBuilder()
+                .setLabel('Liên hệ Zalo')
+                .setStyle(ButtonStyle.Link)
+                .setURL('https://zalo.me/0762706736')
+        );
+
+        return message.channel.send({ embeds: [adminEmbed], components: [adminRow] });
+    }
+
     if (message.content === '!menu') {
         const row1 = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder().setCustomId('menu_p1').setPlaceholder('🍎 Trái Vĩnh Viễn 1').addOptions(
@@ -107,6 +135,8 @@ client.on("interactionCreate", async (interaction) => {
     }
 
     if (interaction.isButton()) {
+        if (interaction.customId.includes('link')) return; // Bỏ qua các nút link
+
         const parts = interaction.customId.split('_');
         const targetUserId = parts[1];
         const targetUser = await client.users.fetch(targetUserId).catch(() => null);
@@ -158,7 +188,6 @@ client.on("interactionCreate", async (interaction) => {
             } 
             else if (parts[0] === 'done') {
                 await interaction.reply({ content: "📸 Admin gửi **Ảnh Proof** giao đồ vào kênh này!", ephemeral: true });
-                
                 const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
                 const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
                 
@@ -190,8 +219,6 @@ client.on("interactionCreate", async (interaction) => {
                     });
 
                     if (targetUser) targetUser.send("🏁 Đơn hàng hoàn tất! Cảm ơn bạn.");
-                    
-                    // TÍNH NĂNG XÓA ẢNH ADMIN ĐÃ ĐƯỢC TẮT TẠI ĐÂY
                 });
             } 
             else if (parts[0] === 'deny') {
