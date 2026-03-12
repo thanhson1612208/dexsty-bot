@@ -49,7 +49,10 @@ client.on("messageCreate", async (message) => {
         const botCommands = ["!menu", "!admin", "!gaytest"];
         if (botCommands.some(cmd => message.content.startsWith(cmd))) {
             const warning = await message.reply("❌ Sang kênh lệnh riêng để dùng nhé!");
-            setTimeout(() => { message.delete().catch(() => {}); warning.delete().catch(() => {}); }, 5000);
+            setTimeout(() => { 
+                message.delete().catch(() => {}); 
+                warning.delete().catch(() => {}); 
+            }, 5000);
             return;
         }
     }
@@ -65,148 +68,200 @@ client.on("messageCreate", async (message) => {
             .setAuthor({ name: 'Dexsty Shop Support', iconURL: client.user.displayAvatarURL() })
             .setColor("#00D1FF")
             .setThumbnail('https://cdn-icons-png.flaticon.com/512/3135/3135715.png')
-            .setDescription("Chào bạn! Nếu bạn gặp bất kỳ vấn đề gì về đơn hàng hoặc cần tư vấn, hãy liên hệ trực tiếp với Admin qua các kênh dưới đây.")
+            .setDescription("Chào bạn! Nếu bạn gặp bất kỳ vấn đề gì về đơn hàng hoặc cần tư vấn, hãy liên hệ trực tiếp với Admin.")
             .addFields(
-                { name: "👤 Chủ Shop", value: "Bùi Thanh Sơn", inline
-{ name: "📞 Hotline / Zalo", value: "📱 0762706736", inline: true },
-{ name: "🕒 Trạng thái", value: "✅ Đang Online", inline: true },
-{ name: "📢 Lưu ý", value: "Vui lòng chuẩn bị sẵn Ảnh Bill để được hỗ trợ nhanh nhất!" }
-)
-.setFooter({ text: "Dexsty Shop - Uy Tín Tạo Nên Thương Hiệu" })
-.setTimestamp();
-​const adminRow = new ActionRowBuilder().addComponents(
-new ButtonBuilder()
-.setLabel('Facebook: Bùi Thanh Sơn')
-.setStyle(ButtonStyle.Link)
-.setURL('https://www.facebook.com/share/17P4Xrx6bf/'),
-new ButtonBuilder()
-.setLabel('Liên hệ qua Zalo')
-.setStyle(ButtonStyle.Link)
-.setURL('https://zalo.me/0762706736')
-);
-​return message.channel.send({ embeds: [adminEmbed], components: [adminRow] });
-}
-​if (message.content === '!menu') {
-const row1 = new ActionRowBuilder().addComponents(
-new StringSelectMenuBuilder().setCustomId('menu_p1').setPlaceholder('🍎 Trái Vĩnh Viễn 1').addOptions(
-Object.entries(prices).slice(0, 15).map(([k, v]) => ({ label: Perm ${k}, value: k, description: v }))
-)
-);
-const row2 = new ActionRowBuilder().addComponents(
-new StringSelectMenuBuilder().setCustomId('menu_p2').setPlaceholder('🍎 Trái Vĩnh Viễn 2').addOptions(
-Object.entries(prices).slice(15, 35).map(([k, v]) => ({ label: Perm ${k}, value: k, description: v }))
-)
-);
-const row3 = new ActionRowBuilder().addComponents(
-new StringSelectMenuBuilder().setCustomId('menu_gp').setPlaceholder('🎮 Gamepass/Robux').addOptions(
-Object.entries(prices).slice(35).map(([k, v]) => ({ label: k.toUpperCase(), value: k, description: v }))
-)
-);
-const embed = new EmbedBuilder()
-.setTitle('🛒 DEX CĂNG ĐÉT - SHOP BLOX FRUIT')
-.setColor('#00ffcc')
-.setImage('https://i.postimg.cc/j2hHsYHp/IMG-20260309-004009.jpg');
-​return message.channel.send({ embeds: [embed], components: [row1, row2, row3] });
-}
+                { name: "👤 Chủ Shop", value: "Bùi Thanh Sơn", inline: true },
+                { name: "📞 Hotline / Zalo", value: "0762706736", inline: true },
+                { name: "🕒 Trạng thái", value: "✅ Đang Online", inline: true },
+                { name: "📢 Lưu ý", value: "Vui lòng chuẩn bị sẵn Ảnh Bill để được hỗ trợ nhanh nhất!" }
+            )
+            .setFooter({ text: "Dexsty Shop - Uy Tín Tạo Nên Thương Hiệu" })
+            .setTimestamp();
+
+        const adminRow = new ActionRowBuilder().addComponents(
+            new ButtonBuilder().setLabel('Facebook: Bùi Thanh Sơn').setStyle(ButtonStyle.Link).setURL('https://www.facebook.com/share/17P4Xrx6bf/'),
+            new ButtonBuilder().setLabel('Liên hệ qua Zalo').setStyle(ButtonStyle.Link).setURL('https://zalo.me/0762706736')
+        );
+
+        return message.channel.send({ embeds: [adminEmbed], components: [adminRow] });
+    }
+
+    if (message.content === '!menu') {
+        const row1 = new ActionRowBuilder().addComponents(
+            new StringSelectMenuBuilder().setCustomId('menu_p1').setPlaceholder('🍎 Trái Vĩnh Viễn 1').addOptions(
+                Object.entries(prices).slice(0, 15).map(([k, v]) => ({ label: `Perm ${k}`, value: k, description: v }))
+            )
+        );
+        const row2 = new ActionRowBuilder().addComponents(
+            new StringSelectMenuBuilder().setCustomId('menu_p2').setPlaceholder('🍎 Trái Vĩnh Viễn 2').addOptions(
+                Object.entries(prices).slice(15, 35).map(([k, v]) => ({ label: `Perm ${k}`, value: k, description: v }))
+            )
+        );
+        const row3 = new ActionRowBuilder().addComponents(
+            new StringSelectMenuBuilder().setCustomId('menu_gp').setPlaceholder('🎮 Gamepass/Robux').addOptions(
+                Object.entries(prices).slice(35).map(([k, v]) => ({ label: k.toUpperCase(), value: k, description: v }))
+            )
+        );
+        const embed = new EmbedBuilder()
+            .setTitle('🛒 DEX CĂNG ĐÉT - SHOP BLOX FRUIT')
+            .setColor('#00ffcc')
+            .setImage('https://i.postimg.cc/j2hHsYHp/IMG-20260309-004009.jpg');
+
+        return message.channel.send({ embeds: [embed], components: [row1, row2, row3] });
+    }
 });
-​client.on("interactionCreate", async (interaction) => {
-if (interaction.isStringSelectMenu()) {
-try {
-await interaction.deferReply({ ephemeral: true });
-const val = interaction.values[0];
-const priceStr = prices[val] || "0";
-const amount = parseInt(priceStr.replace(/K/g, '')) * 1000;
-const info = Thanh toan ${val.toUpperCase()} shop Dexsty;
-const qrUrl = https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=${encodeURIComponent(info)};
-​const row = new ActionRowBuilder().addComponents(
-new ButtonBuilder().setCustomId(paid_${val}_${priceStr}).setLabel('✅ Chuyển Khoản').setStyle(ButtonStyle.Success),
-new ButtonBuilder().setCustomId(card_${val}_${priceStr}).setLabel('💳 Thẻ Cào (Phí 15%)').setStyle(ButtonStyle.Primary)
-);
-​await interaction.editReply({
-content: ## 🛒 THÔNG TIN ĐƠN HÀNG\n📦 **Món:** ${val.toUpperCase()}\n💰 **Giá CK:** ${priceStr}\n⚠️ **Lưu ý:** Thẻ cào chịu phí chiết khấu **15%**.,
-files: [qrUrl], components: [row]
+
+client.on("interactionCreate", async (interaction) => {
+    if (interaction.isStringSelectMenu()) {
+        try {
+            await interaction.deferReply({ ephemeral: true });
+            const val = interaction.values[0];
+            const priceStr = prices[val] || "0";
+            const amount = parseInt(priceStr.replace(/K/g, '')) * 1000;
+            const info = `Thanh toan ${val.toUpperCase()} shop Dexsty`;
+            const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=${encodeURIComponent(info)}`;
+
+            const row = new ActionRowBuilder().addComponents(
+                new ButtonBuilder().setCustomId(`paid_${val}_${priceStr}`).setLabel('✅ Chuyển Khoản').setStyle(ButtonStyle.Success),
+                new ButtonBuilder().setCustomId(`card_${val}_${priceStr}`).setLabel('💳 Thẻ Cào (Phí 15%)').setStyle(ButtonStyle.Primary)
+            );
+
+            await interaction.editReply({
+                content: `## 🛒 THÔNG TIN ĐƠN HÀNG\n📦 **Món:** ${val.toUpperCase()}\n💰 **Giá CK:** ${priceStr}\n⚠️ **Lưu ý:** Thẻ cào chịu phí chiết khấu **15%**.`,
+                files: [qrUrl], components: [row]
+            });
+        } catch (e) { 
+            console.error(e);
+            await interaction.editReply({ content: "❌ Lỗi kết nối, hãy thử lại!" }).catch(() => {}); 
+        }
+    }
+
+    if (interaction.isButton()) {
+        if (interaction.component.style === ButtonStyle.Link) return;
+
+        const parts = interaction.customId.split('_');
+        const action = parts[0]; // paid, card, approve, done, deny
+        const item = parts[1]; // Tên món hoặc ID User tùy action
+        const price = parts[2];
+
+        // Xử lý nút khách hàng bấm (Card/Paid)
+        if (action === 'card') {
+            await interaction.update({ content: "💳 **NHẬN THẺ CÀO**\n👉 Nhập mẫu: `Loại thẻ - Mệnh giá - Mã thẻ - Seri`", components: [], files: [] });
+            const filter = m => m.author.id === interaction.user.id;
+            const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
+            
+            collector.on('collect', async m => {
+                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+                const logEmbed = new EmbedBuilder()
+                    .setTitle("💳 ĐƠN THẺ CÀO MỚI")
+                    .setColor("#9b59b6")
+                    .addFields(
+                        { name: "👤 Khách", value: `<@${interaction.user.id}>`, inline: true },
+                        { name: "📦 Món", value: item.toUpperCase(), inline: true },
+                        { name: "💰 Giá", value: price, inline: true },
+                        { name: "🎫 Thẻ", value: `\`${m.content}\`` }
+                    );
+                
+                const adminRow = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId(`approve_${interaction.user.id}_${item}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId(`done_${interaction.user.id}_${item}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
+                    new ButtonBuilder().setCustomId(`deny_${interaction.user.id}_${item}`).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
+                );
+
+                if (logChannel) logChannel.send({ content: `🔔 <@${ADMIN_ID}> CÓ ĐƠN THẺ!`, embeds: [logEmbed], components: [adminRow] });
+                m.reply("✅ Đã gửi thẻ! Đợi Admin check nhé.");
+            });
+        }
+
+        if (action === 'paid') {
+            await interaction.update({ content: "⏳ Hãy gửi Ảnh Bill vào đây!", components: [] });
+            const filter = m => m.author.id === interaction.user.id && m.attachments.size > 0;
+            const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
+            
+            collector.on('collect', async m => {
+                const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
+                const logEmbed = new EmbedBuilder()
+                    .setTitle("🆕 ĐƠN CHUYỂN KHOẢN")
+                    .setColor("#ffff00")
+                    .addFields(
+                        { name: "👤 Khách", value: `<@${m.author.id}>` },
+                        { name: "📦 Món", value: item.toUpperCase() },
+                        { name: "💰 Giá", value: price }
+                    )
+                    .setImage(m.attachments.first().proxyURL);
+
+                const adminRow = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId(`approve_${m.author.id}_${item}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId(`done_${m.author.id}_${item}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
+                    new ButtonBuilder().setCustomId(`deny_${m.author.id}_${item}`).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
+                );
+
+                if (logChannel) logChannel.send({ embeds: [logEmbed], components: [adminRow] });
+                m.reply("✅ Bill đã được gửi tới Admin!");
+            });
+        }
+
+        // Xử lý nút Admin bấm
+        if (['approve', 'done', 'deny'].includes(action)) {
+            if (interaction.user.id !== ADMIN_ID) return interaction.reply({ content: "❌ Bạn không có quyền Admin!", ephemeral: true });
+            
+            const targetUserId = parts[1];
+            const targetUser = await client.users.fetch(targetUserId).catch(() => null);
+
+            if (action === 'approve') {
+                const oldEmbed = interaction.message.embeds[0];
+                const appEmbed = EmbedBuilder.from(oldEmbed).setTitle("🟡 ĐANG GIAO ĐỒ...").setColor("#f1c40f");
+                await interaction.update({ content: `✅ Đã duyệt đơn cho <@${targetUserId}>`, embeds: [appEmbed], components: [interaction.message.components[0]] });
+                if (targetUser) targetUser.send("✅ Admin đã nhận tiền! Đồ của bạn đang được giao.");
+            } 
+            else if (action === 'done') {
+                await interaction.reply({ content: "📸 Admin gửi Ảnh Proof giao đồ vào đây!", ephemeral: true });
+                const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
+                const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
+
+                collector.on('collect', async m => {
+                    const doneChan = client.channels.cache.get(DONE_LOG_CHANNEL_ID);
+                    const oldEmbed = interaction.message.embeds[0];
+                    const monHang = oldEmbed.fields.find(f => f.name === "📦 Món")?.value || "N/A";
+                    const giaTien = oldEmbed.fields.find(f => f.name === "💰 Giá")?.value || "N/A";
+
+                    const doneEmbed = new EmbedBuilder()
+                        .setTitle("🏁 ĐƠN HÀNG HOÀN TẤT THÀNH CÔNG")
+                        .setAuthor({ name: 'Dexsty Shop - Uy Tín Số 1', iconURL: client.user.displayAvatarURL() })
+                        .setColor("#2ecc71")
+                        .addFields(
+                            { name: "👤 Khách hàng", value: `<@${targetUserId}>`, inline: true },
+                            { name: "📦 Món hàng", value: `**${monHang}**`, inline: true },
+                            { name: "💰 Tổng tiền", value: `${giaTien}`, inline: true }
+                        )
+                        .setImage(m.attachments.first().proxyURL)
+                        .setFooter({ text: "Cảm ơn đã ủng hộ Dexsty Shop!", iconURL: interaction.user.displayAvatarURL() })
+                        .setTimestamp();
+
+                    if (doneChan) await doneChan.send({ content: `🎊 Đơn của <@${targetUserId}> đã xong!`, embeds: [doneEmbed] });
+
+                    await interaction.message.edit({
+                        content: "🏁 ĐƠN ĐÃ XONG!",
+                        embeds: [EmbedBuilder.from(oldEmbed).setTitle("🏁 ĐƠN ĐÃ HOÀN TẤT").setColor("#2ecc71")],
+                        components: []
+                    });
+
+                    if (targetUser) targetUser.send("🏁 Đơn hàng đã hoàn tất! Cảm ơn bạn đã tin tưởng.");
+                    m.delete().catch(() => {});
+                });
+            } 
+            else if (action === 'deny') {
+                const oldEmbed = interaction.message.embeds[0];
+                await interaction.update({ 
+                    content: "❌ Đã từ chối đơn.", 
+                    embeds: [EmbedBuilder.from(oldEmbed).setTitle("❌ ĐƠN BỊ TỪ CHỐI").setColor("#e74c3c")], 
+                    components: [] 
+                });
+                if (targetUser) targetUser.send("❌ Đơn hàng của bạn đã bị từ chối. Vui lòng liên hệ Admin để biết lý do.");
+            }
+        }
+    }
 });
-} catch (e) { await interaction.editReply({ content: "❌ Lỗi kết nối, hãy thử lại!" }).catch(() => {}); }
-}
-​if (interaction.isButton()) {
-if (interaction.component.style === ButtonStyle.Link) return;
-​const parts = interaction.customId.split('_');
-const action = parts[0];
-const targetUserId = parts[1];
-const targetUser = await client.users.fetch(targetUserId).catch(() => null);
-​if (action === 'card') {
-await interaction.update({ content: 💳 **NHẬN THẺ CÀO**\n👉 Nhập mẫu: \Loại thẻ - Mệnh giá - Mã thẻ - Seri`, components: [], files: [] }); const filter = m => m.author.id === interaction.user.id; const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 }); collector.on('collect', async m => { const logChannel = client.channels.cache.get(LOG_CHANNEL_ID); const logEmbed = new EmbedBuilder().setTitle("💳 ĐƠN THẺ CÀO MỚI").setColor("#9b59b6") .addFields( { name: "👤 Khách", value: <@{interaction.user.id}>`, inline: true }, 
-{ name: "📦 Món", value: parts[1].toUpperCase(), inline: true }, 
-{ name: "💰 Giá", value: parts[2], inline: true }, 
-{ name: "🎫 Thẻ", value: `\`{m.content}` } ); const adminRow = new ActionRowBuilder().addComponents( new ButtonBuilder().setCustomId(approve_{interaction.user.id}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
-new ButtonBuilder().setCustomId(`done_{interaction.user.id}).setLabel('Done đơn').setStyle(ButtonStyle.Success), new ButtonBuilder().setCustomId(deny_{interaction.user.id}`).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
-);
-if (logChannel) logChannel.send({ content: `🔔 <@{ADMIN_ID}> CÓ ĐƠN THẺ!`, embeds: [logEmbed], components: [adminRow] });
-m.reply("✅ Đã gửi thẻ! Đợi Admin check nhé.");
-});
-}
-​if (action === 'paid') {
-await interaction.update({ content: "⏳ Hãy gửi Ảnh Bill vào đây!", components: [] });
-const filter = m => m.author.id === interaction.user.id && m.attachments.size > 0;
-const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
-collector.on('collect', async m => {
-const logChannel = client.channels.cache.get(LOG_CHANNEL_ID);
-const logEmbed = new EmbedBuilder().setTitle("🆕 ĐƠN CHUYỂN KHOẢN").setColor("#ffff00")
-.addFields(
-{ name: "👤 Khách", value: <@${m.author.id}> },
-{ name: "📦 Món", value: parts[1].toUpperCase() },
-{ name: "💰 Giá", value: parts[2] }
-)
-.setImage(m.attachments.first().proxyURL);
-const row = new ActionRowBuilder().addComponents(
-new ButtonBuilder().setCustomId(approve_${m.author.id}).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
-new ButtonBuilder().setCustomId(done_${m.author.id}).setLabel('Done đơn').setStyle(ButtonStyle.Success),
-new ButtonBuilder().setCustomId(deny_${m.author.id}).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
-);
-if (logChannel) logChannel.send({ embeds: [logEmbed], components: [row] });
-m.reply("✅ Bill đã được gửi tới Admin!");
-});
-}
-​if (['approve', 'done', 'deny'].includes(action)) {
-if (interaction.user.id !== ADMIN_ID) return interaction.reply({ content: "❌ Bạn không có quyền Admin!", ephemeral: true });
-​if (action === 'approve') {
-const appEmbed = EmbedBuilder.from(interaction.message.embeds[0]).setTitle("🟡 ĐANG GIAO ĐỒ...").setColor("#f1c40f");
-await interaction.update({ content: ✅ Đã duyệt đơn cho <@${targetUserId}>, embeds: [appEmbed], components: [interaction.message.components[0]] });
-if (targetUser) targetUser.send("✅ Admin đã nhận tiền! Đồ của bạn đang được giao.");
-}
-else if (action === 'done') {
-await interaction.reply({ content: "📸 Admin gửi Ảnh Proof giao đồ vào đây!", ephemeral: true });
-const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
-const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
-​collector.on('collect', async m => {
-const doneChan = client.channels.cache.get(DONE_LOG_CHANNEL_ID);
-const oldEmbed = interaction.message.embeds[0];
-const monHang = oldEmbed.fields.find(f => f.name === "📦 Món")?.value || "N/A";
-const giaTien = oldEmbed.fields.find(f => f.name === "💰 Giá")?.value || "N/A";
-​const doneEmbed = new EmbedBuilder()
-.setTitle("🏁 ĐƠN HÀNG HOÀN TẤT THÀNH CÔNG")
-.setAuthor({ name: 'Dexsty Shop - Uy Tín Số 1', iconURL: client.user.displayAvatarURL() })
-.setColor("#2ecc71")
-.addFields(
-{ name: "👤 Khách hàng", value: <@${targetUserId}>, inline: true },
-{ name: "📦 Món hàng", value: **${monHang}**, inline: true },
-{ name: "💰 Tổng tiền", value: \${giaTien}`, inline: true } ) .setImage(m.attachments.first().proxyURL) .setFooter({ text: Cảm ơn đã ủng hộ Dexsty Shop!`, iconURL: interaction.user.displayAvatarURL() })
-.setTimestamp();
-​if (doneChan) await doneChan.send({ content: 🎊 Đơn của <@${targetUserId}> đã xong!, embeds: [doneEmbed] });
-​await interaction.message.edit({
-content: 🏁 ĐƠN ĐÃ XONG!,
-embeds: [EmbedBuilder.from(oldEmbed).setTitle("🏁 ĐƠN ĐÃ HOÀN TẤT").setColor("#2ecc71")],
-components: []
-});
-​if (targetUser) targetUser.send("🏁 Đơn hàng đã hoàn tất! Cảm ơn bạn.");
-m.delete().catch(() => {});
-});
-}
-else if (action === 'deny') {
-await interaction.update({ content: ❌ Đã từ chối đơn., embeds: [EmbedBuilder.from(interaction.message.embeds[0]).setTitle("❌ ĐƠN BỊ TỪ CHỐI").setColor("#e74c3c")], components: [] });
-if (targetUser) targetUser.send("❌ Đơn hàng đã bị từ chối.");
-}
-}
-}
-});
-​client.login(process.env.TOKEN);  
+
+client.login("TOKEN_CUA_BAN_O_DAY");
+ 
