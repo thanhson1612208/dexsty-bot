@@ -67,7 +67,6 @@ client.once("ready", async () => {
 client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
-    // Chặn lệnh tại chat chung
     if (message.channel.id === CHAT_CHUNG_ID) {
         const botCommands = ["!menu", "!admin", "!top"];
         if (botCommands.some(cmd => message.content.startsWith(cmd))) {
@@ -137,7 +136,7 @@ client.on("interactionCreate", async (interaction) => {
         const val = interaction.values[0];
         const priceStr = prices[val] || "0";
         const amount = parseInt(priceStr.replace(/K/g, '')) * 1000;
-        const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=Thanh+toan+${val}+shop+Dexsty`;
+        const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=Nap+${val}+shop+Dexsty`;
 
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder().setCustomId(`paid_${val}_${priceStr}`).setLabel('✅ Chuyển Khoản').setStyle(ButtonStyle.Success),
@@ -152,10 +151,13 @@ client.on("interactionCreate", async (interaction) => {
 
     if (interaction.isButton()) {
         if (interaction.component.style === ButtonStyle.Link) return;
-        const [action, item, price] = interaction.customId.split('_');
+        const parts = interaction.customId.split('_');
+        const action = parts[0];
 
-        // --- XỬ LÝ KHÁCH HÀNG ---
+        // --- KHÁCH HÀNG CHỌN HÌNH THỨC ---
         if (action === 'card' || action === 'paid') {
+            const item = parts[1];
+            const price = parts[2];
             await interaction.update({ content: action === 'card' ? "💳 Gửi thẻ: `Loại - Mệnh giá - Mã - Seri`" : "⏳ Gửi Ảnh Bill vào đây!", components: [], files: [] });
             const filter = m => m.author.id === interaction.user.id && (action === 'paid' ? m.attachments.size > 0 : true);
             const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
@@ -163,6 +165,7 @@ client.on("interactionCreate", async (interaction) => {
             collector.on('collect', async m => {
                 const logChannel = await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null);
                 if (!logChannel) return;
+                
                 const logEmbed = new EmbedBuilder()
                     .setTitle(action === 'card' ? "💳 ĐƠN THẺ CÀO" : "🆕 ĐƠN CHUYỂN KHOẢN")
                     .setColor(action === 'card' ? "#9b59b6" : "#ffff00")
@@ -174,6 +177,7 @@ client.on("interactionCreate", async (interaction) => {
                 if (action === 'paid') logEmbed.setImage(m.attachments.first().proxyURL);
                 else logEmbed.addFields({ name: "🎫 Nội dung", value: `\`${m.content}\`` });
 
+                // Cấu trúc nút cho Admin: action_userId_itemName_priceValue
                 const adminRow = new ActionRowBuilder().addComponents(
                     new ButtonBuilder().setCustomId(`approve_${interaction.user.id}_${item}_${price}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
                     new ButtonBuilder().setCustomId(`done_${interaction.user.id}_${item}_${price}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
@@ -184,12 +188,13 @@ client.on("interactionCreate", async (interaction) => {
             });
         }
 
-        // --- XỬ LÝ ADMIN ---
+        // --- QUẢN TRỊ VIÊN XỬ LÝ ---
         if (['approve', 'done', 'deny'].includes(action)) {
-            if (interaction.user.id !== ADMIN_ID) return;
-            const targetUserId = item; // Ở đây item chứa userId do split customId
-            const itemName = price; // Ở đây price chứa tên món
-            const priceVal = interaction.customId.split('_')[3]; // Giá thực tế
+            if (interaction.user.id !== ADMIN_ID) return interaction.reply({ content: "❌ Bạn không phải Admin!", ephemeral: true });
+            
+            const targetUserId = parts[1];
+            const itemName = parts[2];
+            const priceVal = parts[3];
 
             if (action === 'approve') {
                 let amount = parseInt(priceVal.replace(/K/g, '')) * 1000;
@@ -200,13 +205,14 @@ client.on("interactionCreate", async (interaction) => {
                     if (!snap.exists()) await setDoc(userRef, { total: amount });
                     else await updateDoc(userRef, { total: increment(amount) });
                 }
-                await interaction.update({ content: `✅ Đã duyệt tiền ${priceVal} cho <@${targetUserId}>`, components: [interaction.message.components[0]] });
+                await interaction.update({ content: `✅ Đã duyệt tiền **${priceVal}** cho <@${targetUserId}>`, components: [interaction.message.components[0]] });
             } 
 
             if (action === 'done') {
                 await interaction.reply({ content: "📸 Admin gửi Ảnh Proof giao đồ vào đây!", ephemeral: true });
                 const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
                 const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
+                
                 collector.on('collect', async m => {
                     const doneChan = await client.channels.fetch(DONE_LOG_CHANNEL_ID).catch(() => null);
                     const doneEmbed = new EmbedBuilder()
@@ -218,13 +224,13 @@ client.on("interactionCreate", async (interaction) => {
                             { name: "💰 Giá", value: priceVal, inline: true }
                         )
                         .setImage(m.attachments.first().proxyURL).setTimestamp();
-                    if (doneChan) doneChan.send({ content: `🎊 <@${targetUserId}> đã xong đồ!`, embeds: [doneEmbed] });
-                    await interaction.message.edit({ content: "🏁 ĐÃ XONG!", components: [] });
+                    if (doneChan) doneChan.send({ content: `🎊 <@${targetUserId}> đã nhận được đồ!`, embeds: [doneEmbed] });
+                    await interaction.message.edit({ content: "🏁 ĐƠN ĐÃ XONG!", components: [] });
                 });
             }
 
             if (action === 'deny') {
-                await interaction.update({ content: "❌ Đã từ chối đơn.", components: [] });
+                await interaction.update({ content: `❌ Đã từ chối đơn của <@${targetUserId}>.`, components: [] });
             }
         }
     }
