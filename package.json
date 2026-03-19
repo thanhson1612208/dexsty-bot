@@ -1,7 +1,7 @@
 {
   "name": "dexsty-bot",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.3.0",
+  "description": "Bot Shop Blox Fruit by Bui Thanh Son",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
