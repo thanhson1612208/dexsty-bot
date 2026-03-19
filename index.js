@@ -56,20 +56,18 @@ client.once("ready", async () => {
     try {
         const configRaw = process.env.__firebase_config;
         if (configRaw) {
-            const firebaseConfig = JSON.parse(configRaw);
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            
+            const fbApp = initializeApp(JSON.parse(configRaw));
+            db = getFirestore(fbApp);
+            auth = getAuth(fbApp);
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                 await signInWithCustomToken(auth, __initial_auth_token);
             } else {
                 await signInAnonymously(auth);
             }
             isAuthReady = true;
-            console.log("✅ Firebase Ready!");
+            console.log("✅ Firebase connected!");
         }
-    } catch (e) { console.error("❌ Firebase Error:", e.message); }
+    } catch (e) { console.error("❌ Firebase error:", e); }
     console.log(`🚀 Bot Dexsty Shop Online: ${client.user.tag}`);
 });
 
@@ -77,7 +75,7 @@ client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
     if (message.content === "!top") {
-        if (!isAuthReady) return message.reply("⚠️ Đang kết nối...");
+        if (!isAuthReady) return message.reply("⚠️ Đang khởi động...");
         const monthYear = getCurrentMonth();
         const colRef = collection(db, 'artifacts', appId, 'public', 'data', `top_nap_${monthYear}`);
         try {
@@ -95,17 +93,17 @@ client.on("messageCreate", async (message) => {
 
     if (message.content === '!menu') {
         const row1 = new ActionRowBuilder().addComponents(
-            new StringSelectMenuBuilder().setCustomId('m_p1').setPlaceholder('🍎 Trái Vĩnh Viễn 1').addOptions(
+            new StringSelectMenuBuilder().setCustomId('m1').setPlaceholder('🍎 Trái Vĩnh Viễn 1').addOptions(
                 Object.entries(prices).slice(0, 15).map(([k, v]) => ({ label: `Perm ${k}`, value: k, description: v }))
             )
         );
         const row2 = new ActionRowBuilder().addComponents(
-            new StringSelectMenuBuilder().setCustomId('m_p2').setPlaceholder('🍎 Trái Vĩnh Viễn 2').addOptions(
+            new StringSelectMenuBuilder().setCustomId('m2').setPlaceholder('🍎 Trái Vĩnh Viễn 2').addOptions(
                 Object.entries(prices).slice(15, 35).map(([k, v]) => ({ label: `Perm ${k}`, value: k, description: v }))
             )
         );
         const row3 = new ActionRowBuilder().addComponents(
-            new StringSelectMenuBuilder().setCustomId('m_gp').setPlaceholder('🎮 Gamepass/Robux').addOptions(
+            new StringSelectMenuBuilder().setCustomId('m3').setPlaceholder('🎮 Gamepass/Robux').addOptions(
                 Object.entries(prices).slice(35).map(([k, v]) => ({ label: k.toUpperCase(), value: k, description: v }))
             )
         );
@@ -135,9 +133,8 @@ client.on("interactionCreate", async (interaction) => {
         const parts = interaction.customId.split('_');
         const act = parts[0];
 
-        // KHÁCH GỬI BILL
         if (act === 'p' || act === 'c') {
-            await interaction.update({ content: act === 'c' ? "💳 Gửi thẻ: `Loại - Mệnh giá - Mã - Seri`" : "⏳ Gửi Ảnh Bill!", components: [], files: [] });
+            await interaction.update({ content: act === 'c' ? "💳 Gửi: `Loại-Mệnh giá-Mã-Seri`" : "⏳ Gửi Ảnh Bill!", components: [], files: [] });
             const filter = m => m.author.id === interaction.user.id && (act === 'p' ? m.attachments.size > 0 : true);
             const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
             
@@ -153,7 +150,7 @@ client.on("interactionCreate", async (interaction) => {
                         { name: "💰 Giá", value: parts[2], inline: true }
                     );
                 if (act === 'p') embed.setImage(m.attachments.first().proxyURL);
-                else embed.addFields({ name: "🎫 Thẻ", value: `\`${m.content}\`` });
+                else embed.addFields({ name: "🎫 Chi tiết", value: `\`${m.content}\`` });
 
                 const row = new ActionRowBuilder().addComponents(
                     new ButtonBuilder().setCustomId(`ap_${interaction.user.id}_${parts[1]}_${parts[2]}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
@@ -165,15 +162,15 @@ client.on("interactionCreate", async (interaction) => {
             });
         }
 
-        // ADMIN XỬ LÝ
         if (['ap', 'do', 'de'].includes(act)) {
             if (interaction.user.id !== ADMIN_ID) return;
             const uid = parts[1];
             const name = parts[2];
             const prc = parts[3];
 
+            // DUYỆT TIỀN (AP)
             if (act === 'ap') {
-                // CHỈ SỬ DỤNG deferUpdate một lần
+                // TRÁNH LỖI INTERACTION FAILED BẰNG CÁCH DEFER NGAY
                 await interaction.deferUpdate();
                 let amt = parseInt(prc.replace(/K/g, '')) * 1000;
                 const userRef = doc(db, 'artifacts', appId, 'public', 'data', `top_nap_${getCurrentMonth()}`, uid);
@@ -181,13 +178,18 @@ client.on("interactionCreate", async (interaction) => {
                     const snap = await getDoc(userRef);
                     if (!snap.exists()) await setDoc(userRef, { total: amt });
                     else await updateDoc(userRef, { total: increment(amt) });
-                    // editReply sau khi deferUpdate
+                    
+                    // Sau khi ghi xong mới editReply
                     await interaction.editReply({ content: `✅ Đã duyệt **${prc}** cho <@${uid}>`, components: [interaction.message.components[0]] });
-                } catch (e) { console.error(e); }
+                } catch (e) { 
+                    console.error("Firebase Error:", e);
+                    await interaction.editReply({ content: "❌ Lỗi Firebase khi cộng tiền!" });
+                }
             } 
 
+            // DONE ĐƠN (DO)
             if (act === 'do') {
-                await interaction.reply({ content: "📸 Gửi Ảnh Proof vào đây!", ephemeral: true });
+                await interaction.reply({ content: "📸 Admin gửi Ảnh Proof ngay!", ephemeral: true });
                 const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
                 const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
                 collector.on('collect', async m => {
@@ -201,12 +203,12 @@ client.on("interactionCreate", async (interaction) => {
                             { name: "💰 Giá", value: prc, inline: true }
                         )
                         .setImage(m.attachments.first().proxyURL);
-                    if (doneChan) doneChan.send({ embeds: [doneEmbed] });
-                    // Cập nhật tin nhắn gốc trong log
+                    if (doneChan) doneChan.send({ content: `🎊 <@${uid}> chúc mừng!`, embeds: [doneEmbed] });
                     await interaction.message.edit({ content: "🏁 ĐƠN ĐÃ HOÀN TẤT!", components: [] });
                 });
             }
 
+            // HỦY ĐƠN (DE)
             if (act === 'de') {
                 await interaction.update({ content: `❌ Đã hủy đơn của <@${uid}>.`, components: [] });
             }
