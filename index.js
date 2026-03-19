@@ -67,7 +67,7 @@ client.once("ready", async () => {
                 await signInAnonymously(auth);
             }
             isAuthReady = true;
-            console.log("✅ Firebase connected and authenticated!");
+            console.log("✅ Firebase Ready!");
         }
     } catch (e) { console.error("❌ Firebase Error:", e.message); }
     console.log(`🚀 Bot Dexsty Shop Online: ${client.user.tag}`);
@@ -77,26 +77,20 @@ client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
     if (message.content === "!top") {
-        if (!isAuthReady) return message.reply("⚠️ Bot chưa sẵn sàng kết nối dữ liệu!");
+        if (!isAuthReady) return message.reply("⚠️ Đang kết nối...");
         const monthYear = getCurrentMonth();
         const colRef = collection(db, 'artifacts', appId, 'public', 'data', `top_nap_${monthYear}`);
         try {
             const snapshot = await getDocs(colRef);
             let players = [];
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                players.push({ id: doc.id, total: data.total || 0 });
-            });
+            snapshot.forEach(doc => players.push({ id: doc.id, total: doc.data().total || 0 }));
             players.sort((a, b) => b.total - a.total);
             const embed = new EmbedBuilder()
                 .setTitle(`🏆 TOP NẠP THÁNG ${monthYear}`)
                 .setColor("#F1C40F")
-                .setDescription(players.length === 0 ? "Chưa có ai nạp trong tháng này." : players.slice(0, 10).map((p, i) => `${i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🔹"} <@${p.id}>: \`${p.total.toLocaleString()}đ\``).join("\n"));
+                .setDescription(players.length === 0 ? "Chưa có nạp." : players.slice(0, 10).map((p, i) => `${i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "🔹"} <@${p.id}>: \`${p.total.toLocaleString()}đ\``).join("\n"));
             return message.channel.send({ embeds: [embed] });
-        } catch (e) { 
-            console.error(e);
-            return message.reply("❌ Lỗi tải dữ liệu Top!"); 
-        }
+        } catch (e) { return message.reply("❌ Lỗi tải TOP!"); }
     }
 
     if (message.content === '!menu') {
@@ -127,54 +121,51 @@ client.on("interactionCreate", async (interaction) => {
     if (interaction.isStringSelectMenu()) {
         await interaction.deferReply({ ephemeral: true });
         const val = interaction.values[0];
-        const priceStr = prices[val] || "0";
-        const amount = parseInt(priceStr.replace(/K/g, '')) * 1000;
+        const prc = prices[val] || "0";
+        const amount = parseInt(prc.replace(/K/g, '')) * 1000;
         const qrUrl = `https://img.vietqr.io/image/VCB-1044627277-compact.png?amount=${amount}&addInfo=Nap+${val}+shop+Dexsty`;
         const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId(`p_${val}_${priceStr}`).setLabel('✅ Chuyển Khoản').setStyle(ButtonStyle.Success),
-            new ButtonBuilder().setCustomId(`c_${val}_${priceStr}`).setLabel('💳 Thẻ Cào (Phí 15%)').setStyle(ButtonStyle.Primary)
+            new ButtonBuilder().setCustomId(`p_${val}_${prc}`).setLabel('✅ CK').setStyle(ButtonStyle.Success),
+            new ButtonBuilder().setCustomId(`c_${val}_${prc}`).setLabel('💳 Thẻ').setStyle(ButtonStyle.Primary)
         );
-        await interaction.editReply({
-            content: `## 🛒 THÔNG TIN ĐƠN HÀNG\n📦 **Món:** ${val.toUpperCase()}\n💰 **Giá:** ${priceStr}`,
-            files: [qrUrl], components: [row]
-        });
+        await interaction.editReply({ content: `📦 **Món:** ${val.toUpperCase()}\n💰 **Giá:** ${prc}`, files: [qrUrl], components: [row] });
     }
 
     if (interaction.isButton()) {
         const parts = interaction.customId.split('_');
         const act = parts[0];
 
+        // KHÁCH GỬI BILL
         if (act === 'p' || act === 'c') {
-            const item = parts[1];
-            const price = parts[2];
-            await interaction.update({ content: act === 'c' ? "💳 Gửi thẻ: `Loại - Mệnh giá - Mã - Seri`" : "⏳ Gửi Ảnh Bill vào đây!", components: [], files: [] });
+            await interaction.update({ content: act === 'c' ? "💳 Gửi thẻ: `Loại - Mệnh giá - Mã - Seri`" : "⏳ Gửi Ảnh Bill!", components: [], files: [] });
             const filter = m => m.author.id === interaction.user.id && (act === 'p' ? m.attachments.size > 0 : true);
-            const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
+            const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
             
             collector.on('collect', async m => {
                 const logChan = await client.channels.fetch(LOG_CHANNEL_ID).catch(() => null);
                 if (!logChan) return;
                 const embed = new EmbedBuilder()
-                    .setTitle(act === 'c' ? "💳 ĐƠN THẺ CÀO" : "🆕 ĐƠN CHUYỂN KHOẢN")
+                    .setTitle(act === 'c' ? "💳 THẺ CÀO" : "🆕 CK")
                     .setColor(act === 'c' ? "#9b59b6" : "#ffff00")
                     .addFields(
                         { name: "👤 Khách", value: `<@${interaction.user.id}>`, inline: true },
-                        { name: "📦 Món", value: item.toUpperCase(), inline: true },
-                        { name: "💰 Giá", value: price, inline: true }
+                        { name: "📦 Món", value: parts[1].toUpperCase(), inline: true },
+                        { name: "💰 Giá", value: parts[2], inline: true }
                     );
                 if (act === 'p') embed.setImage(m.attachments.first().proxyURL);
-                else embed.addFields({ name: "🎫 Nội dung", value: `\`${m.content}\`` });
+                else embed.addFields({ name: "🎫 Thẻ", value: `\`${m.content}\`` });
 
                 const row = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId(`ap_${interaction.user.id}_${item}_${price}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
-                    new ButtonBuilder().setCustomId(`do_${interaction.user.id}_${item}_${price}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
-                    new ButtonBuilder().setCustomId(`de_${interaction.user.id}_${item}_${price}`).setLabel('Từ chối').setStyle(ButtonStyle.Danger)
+                    new ButtonBuilder().setCustomId(`ap_${interaction.user.id}_${parts[1]}_${parts[2]}`).setLabel('Duyệt tiền').setStyle(ButtonStyle.Primary),
+                    new ButtonBuilder().setCustomId(`do_${interaction.user.id}_${parts[1]}_${parts[2]}`).setLabel('Done đơn').setStyle(ButtonStyle.Success),
+                    new ButtonBuilder().setCustomId(`de_${interaction.user.id}_${parts[1]}_${parts[2]}`).setLabel('Hủy').setStyle(ButtonStyle.Danger)
                 );
                 await logChan.send({ embeds: [embed], components: [row] });
-                m.reply("✅ Đã gửi đơn! Admin đang kiểm tra.");
+                m.reply("✅ Đã gửi Admin!");
             });
         }
 
+        // ADMIN XỬ LÝ
         if (['ap', 'do', 'de'].includes(act)) {
             if (interaction.user.id !== ADMIN_ID) return;
             const uid = parts[1];
@@ -182,48 +173,42 @@ client.on("interactionCreate", async (interaction) => {
             const prc = parts[3];
 
             if (act === 'ap') {
+                // CHỈ SỬ DỤNG deferUpdate một lần
                 await interaction.deferUpdate();
-                if (!isAuthReady) return;
                 let amt = parseInt(prc.replace(/K/g, '')) * 1000;
-                const monthYear = getCurrentMonth();
-                // FIX: Sử dụng setDoc với { merge: true } để tự động tạo mới nếu không tồn tại
-                const userRef = doc(db, 'artifacts', appId, 'public', 'data', `top_nap_${monthYear}`, uid);
+                const userRef = doc(db, 'artifacts', appId, 'public', 'data', `top_nap_${getCurrentMonth()}`, uid);
                 try {
                     const snap = await getDoc(userRef);
-                    if (!snap.exists()) {
-                        await setDoc(userRef, { total: amt });
-                    } else {
-                        await updateDoc(userRef, { total: increment(amt) });
-                    }
-                    await interaction.editReply({ content: `✅ Đã duyệt tiền **${prc}** cho <@${uid}>`, components: [interaction.message.components[0]] });
-                } catch (err) { 
-                    console.error("Firestore Error:", err);
-                    await interaction.followUp({ content: "❌ Lỗi hệ thống khi cộng tiền!", ephemeral: true });
-                }
+                    if (!snap.exists()) await setDoc(userRef, { total: amt });
+                    else await updateDoc(userRef, { total: increment(amt) });
+                    // editReply sau khi deferUpdate
+                    await interaction.editReply({ content: `✅ Đã duyệt **${prc}** cho <@${uid}>`, components: [interaction.message.components[0]] });
+                } catch (e) { console.error(e); }
             } 
 
             if (act === 'do') {
-                await interaction.reply({ content: "📸 Admin gửi Ảnh Proof giao đồ vào đây!", ephemeral: true });
+                await interaction.reply({ content: "📸 Gửi Ảnh Proof vào đây!", ephemeral: true });
                 const filter = m => m.author.id === ADMIN_ID && m.attachments.size > 0;
-                const collector = interaction.channel.createMessageCollector({ filter, time: 120000, max: 1 });
+                const collector = interaction.channel.createMessageCollector({ filter, time: 60000, max: 1 });
                 collector.on('collect', async m => {
                     const doneChan = await client.channels.fetch(DONE_LOG_CHANNEL_ID).catch(() => null);
                     const doneEmbed = new EmbedBuilder()
-                        .setTitle("🏁 GIAO DỊCH HOÀN TẤT")
+                        .setTitle("🏁 XONG ĐƠN")
                         .setColor("#2ecc71")
                         .addFields(
                             { name: "👤 Khách", value: `<@${uid}>`, inline: true },
                             { name: "📦 Món", value: name.toUpperCase(), inline: true },
                             { name: "💰 Giá", value: prc, inline: true }
                         )
-                        .setImage(m.attachments.first().proxyURL).setTimestamp();
-                    if (doneChan) doneChan.send({ content: `🎊 <@${uid}> đã nhận được đồ!`, embeds: [doneEmbed] });
-                    await interaction.message.edit({ content: "🏁 ĐƠN ĐÃ XONG!", components: [] });
+                        .setImage(m.attachments.first().proxyURL);
+                    if (doneChan) doneChan.send({ embeds: [doneEmbed] });
+                    // Cập nhật tin nhắn gốc trong log
+                    await interaction.message.edit({ content: "🏁 ĐƠN ĐÃ HOÀN TẤT!", components: [] });
                 });
             }
 
             if (act === 'de') {
-                await interaction.update({ content: `❌ Đã từ chối đơn của <@${uid}>.`, components: [] });
+                await interaction.update({ content: `❌ Đã hủy đơn của <@${uid}>.`, components: [] });
             }
         }
     }
